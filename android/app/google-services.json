@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "515779934955",
+    "project_id": "desce-pro-play-app",
+    "storage_bucket": "desce-pro-play-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515779934955:android:ac6562a91196b3c3c7dcae",
+        "android_client_info": {
+          "package_name": "br.facens.engsoftware.desceproplay.desce_pro_play_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "515779934955-6dis1ceaf0klr8iqsoi098ase21g7f6l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.facens.engsoftware.desceproplay.desce_pro_play_app",
+            "certificate_hash": "481b9668b12440c16df2d512a21c7f7a444405ed"
+          }
+        },
+        {
+          "client_id": "515779934955-3atsmmpl8keupgjlbacg9hs3asujq7nl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA74DKlAHs0J6xwmiJ80wZCGgQ3ih5zkYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "515779934955-3atsmmpl8keupgjlbacg9hs3asujq7nl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
