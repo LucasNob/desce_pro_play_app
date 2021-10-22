@@ -1,15 +1,17 @@
 import 'dart:ui';
 
+import 'package:desce_pro_play_app/pages/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  //await Firebase.initializeApp();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  final Future<FirebaseApp> _FbApp = Firebase.initializeApp();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,7 +19,21 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.amber,
       ),
-      home: MyHomePage(title: 'Desce Pro Play'),
+      home: FutureBuilder(
+        future: _FbApp,
+        builder:(context,snapshot){
+          if(snapshot.hasError){
+            print('Erro Firebase ${snapshot.error.toString()}');
+            return Text("Erro Firebase");
+          } else if (snapshot.hasData){
+            return MyHomePage(title: "Desce pro play - main");
+          }else{
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        }
+      )
     );
   }
 }
@@ -37,7 +53,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Image.asset('lib/resources/logo.png'),
         title: Text(widget.title),
       ),
       body: Center(
@@ -45,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Desce Pro Play',
+              'Desce pro play - main',
             ),
           ],
         ),
