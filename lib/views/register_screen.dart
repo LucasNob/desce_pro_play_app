@@ -20,6 +20,7 @@ class _RegisterViewState extends State<RegisterScreen>{
   TextEditingController _repasswordController = TextEditingController();
 
   String _gender = "";
+  int  _radioId = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -106,10 +107,11 @@ class _RegisterViewState extends State<RegisterScreen>{
               children: <Widget>[
                 new Radio(
                     value: 0,
-                    groupValue: 0,
+                    groupValue: _radioId,
                     onChanged:  (void newValue) {
                       setState(() {
                         _gender = "Masculino";
+                        _radioId = 0;
                       });
                     }
                 ),
@@ -119,10 +121,11 @@ class _RegisterViewState extends State<RegisterScreen>{
                 ),
                 new Radio(
                     value: 1,
-                    groupValue: 1,
+                    groupValue: _radioId,
                     onChanged:  (void newValue) {
                       setState(() {
                         _gender = "Feminino";
+                        _radioId = 1;
                       });
                     }
                 ),
@@ -132,10 +135,11 @@ class _RegisterViewState extends State<RegisterScreen>{
                 ),
                 new Radio(
                     value: 2,
-                    groupValue: 2,
+                    groupValue: _radioId,
                     onChanged:  (void newValue) {
                       setState(() {
                         _gender = "Outro";
+                        _radioId = 2;
                       });
                     }
                 ),
