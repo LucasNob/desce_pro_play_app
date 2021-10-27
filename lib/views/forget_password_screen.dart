@@ -4,15 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../routes.dart';
 
-class HomeLoginScreen extends StatefulWidget {
+class ForgetPasswordScreen extends StatefulWidget {
   @override
-  _HomeLoginViewState createState() => _HomeLoginViewState();
+  _ForgetPasswordViewState createState() =>
+      _ForgetPasswordViewState();
 }
 
-class _HomeLoginViewState extends State<HomeLoginScreen> {
+class _ForgetPasswordViewState extends State<ForgetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _repasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -30,26 +31,6 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
       ),
     );
 
-    final emailField = Material(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: Container(
-            width: mediaQuery.size.width / 1.4,
-            child: TextFormField(
-              controller: _emailController,
-              style: GoogleFonts.anton(
-                  fontSize: fontSize / 2, color: Colors.white),
-              cursorColor: Colors.white,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'E-mail',
-              ),
-            ),
-          ),
-        ));
-
     final passwordField = Material(
         color: Colors.grey,
         borderRadius: BorderRadius.circular(10),
@@ -60,18 +41,40 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
             child: TextFormField(
               obscureText: true,
               controller: _passwordController,
-              style: GoogleFonts.anton(
-                  fontSize: fontSize / 2, color: Colors.white),
+              style: GoogleFonts.anton(fontSize: fontSize/2, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Senha',
+                hintText: 'Nova Senha',
               ),
             ),
           ),
-        ));
+        )
+    );
 
-    final logInButton = ElevatedButton(
+
+    final repasswordField = Material(
+        color: Colors.grey,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: Container(
+            width: mediaQuery.size.width / 1.4,
+            child: TextFormField(
+              obscureText: true,
+              controller: _repasswordController,
+              style: GoogleFonts.anton(fontSize: fontSize/2, color: Colors.white),
+              cursorColor: Colors.white,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: 'Digite novamente a Senha',
+              ),
+            ),
+          ),
+        )
+    );
+
+    final confirmPasswordButton = ElevatedButton(
         child: Padding(
             padding: EdgeInsets.fromLTRB(
                 mediaQuery.size.width / 10,
@@ -79,63 +82,31 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
                 mediaQuery.size.width / 10,
                 mediaQuery.size.height / 150),
             child: Text(
-              "entrar".toUpperCase(),
+              "redefinir".toUpperCase(),
               style: GoogleFonts.anton(fontSize: fontSize, color: Colors.black),
             )),
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ))),
+                  borderRadius: BorderRadius.circular(15),
+                ))),
         onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.register_sports);
+          //Navigator.of(context).pushNamed(AppRoutes.register_sports);
         });
 
     final registerFields = Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        buildTopPadding(topPadding, emailField),
         buildTopPadding(topPadding, passwordField),
+        buildTopPadding(topPadding, repasswordField),
         Padding(
-          padding: EdgeInsets.only(top: mediaQuery.size.height / 15),
-          child: logInButton,
+          padding: EdgeInsets.only(
+              top: mediaQuery.size.height / 15,
+              bottom: mediaQuery.size.height / 15),
+          child: confirmPasswordButton,
         )
       ],
-    );
-
-    final toRegisterScreenButton = MaterialButton(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.register);
-        },
-        child: Text(
-          "Cadastre-se",
-          style: GoogleFonts.roboto(
-              fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-        ));
-
-    final toForgetPasswordScreenButton = MaterialButton(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.forget_password_email);
-        },
-        child: Text(
-          "Esqueci minha senha",
-          style: GoogleFonts.roboto(
-              fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-        ));
-
-    final bottomContainer = Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          toRegisterScreenButton,
-          toForgetPasswordScreenButton,
-        ],
-      ),
     );
 
     final homeContainer = Container(
@@ -146,14 +117,6 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
           children: <Widget>[
             logo,
             registerFields,
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                  0,
-                  mediaQuery.size.height / 15,
-                  0,
-                  mediaQuery.size.height / 30),
-              child: bottomContainer,
-            )
           ],
         ));
 

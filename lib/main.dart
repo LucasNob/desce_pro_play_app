@@ -1,4 +1,5 @@
 import 'package:desce_pro_play_app/routes.dart';
+import 'package:desce_pro_play_app/views/forget_password_screen.dart';
 import 'package:desce_pro_play_app/views/home_login_screen.dart';
 import 'package:desce_pro_play_app/views/register_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Desce Pro Play',
       routes: AppRoutes.define(),
-      home: RegisterScreen(),
+      home: HomeLoginScreen(),
     );
   }
 }
