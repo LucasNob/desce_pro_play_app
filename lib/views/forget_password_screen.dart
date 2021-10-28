@@ -19,8 +19,9 @@ class _ForgetPasswordViewState extends State<ForgetPasswordScreen> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-    final fontSize = mediaQuery.size.width / 15;
-    final topPadding = mediaQuery.size.height / 30;
+    final fieldFontSize = mediaQuery.size.width / 24;
+    final buttonFontSize = mediaQuery.size.width / 14;
+    final topAndBottomPadding = mediaQuery.size.height / 30;
 
     final logo = Material(
       color: Colors.transparent,
@@ -41,7 +42,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordScreen> {
             child: TextFormField(
               obscureText: true,
               controller: _passwordController,
-              style: GoogleFonts.anton(fontSize: fontSize/2, color: Colors.white),
+              style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -63,7 +64,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordScreen> {
             child: TextFormField(
               obscureText: true,
               controller: _repasswordController,
-              style: GoogleFonts.anton(fontSize: fontSize/2, color: Colors.white),
+              style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -77,13 +78,13 @@ class _ForgetPasswordViewState extends State<ForgetPasswordScreen> {
     final confirmPasswordButton = ElevatedButton(
         child: Padding(
             padding: EdgeInsets.fromLTRB(
-                mediaQuery.size.width / 10,
+                mediaQuery.size.width / 25,
                 mediaQuery.size.height / 150,
-                mediaQuery.size.width / 10,
+                mediaQuery.size.width / 25,
                 mediaQuery.size.height / 150),
             child: Text(
               "redefinir".toUpperCase(),
-              style: GoogleFonts.anton(fontSize: fontSize, color: Colors.black),
+              style: GoogleFonts.anton(fontSize: buttonFontSize, color: Colors.black),
             )),
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
@@ -98,12 +99,12 @@ class _ForgetPasswordViewState extends State<ForgetPasswordScreen> {
     final registerFields = Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        buildTopPadding(topPadding, passwordField),
-        buildTopPadding(topPadding, repasswordField),
+        buildTopPadding(topAndBottomPadding, passwordField),
+        buildTopPadding(topAndBottomPadding, repasswordField),
         Padding(
           padding: EdgeInsets.only(
-              top: mediaQuery.size.height / 15,
-              bottom: mediaQuery.size.height / 15),
+              top: topAndBottomPadding,
+              bottom: topAndBottomPadding),
           child: confirmPasswordButton,
         )
       ],
@@ -115,7 +116,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordScreen> {
             color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: <Widget>[
-            logo,
+            buildTopPadding(topAndBottomPadding, logo),
             registerFields,
           ],
         ));

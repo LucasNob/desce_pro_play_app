@@ -18,8 +18,9 @@ class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-    final fontSize = mediaQuery.size.width / 15;
-    final topPadding = mediaQuery.size.height / 30;
+    final fieldFontSize = mediaQuery.size.width / 24;
+    final buttonFontSize = mediaQuery.size.width / 14;
+    final topAndBottomPadding = mediaQuery.size.height / 30;
 
     final logo = Material(
       color: Colors.transparent,
@@ -40,7 +41,7 @@ class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
             child: TextFormField(
               controller: _emailController,
               style: GoogleFonts.anton(
-                  fontSize: fontSize / 2, color: Colors.white),
+                  fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -53,13 +54,13 @@ class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
     final recoverPasswordButton = ElevatedButton(
         child: Padding(
             padding: EdgeInsets.fromLTRB(
-                mediaQuery.size.width / 10,
+                mediaQuery.size.width / 25,
                 mediaQuery.size.height / 150,
-                mediaQuery.size.width / 10,
+                mediaQuery.size.width / 25,
                 mediaQuery.size.height / 150),
             child: Text(
               "recuperar senha".toUpperCase(),
-              style: GoogleFonts.anton(fontSize: fontSize, color: Colors.black),
+              style: GoogleFonts.anton(fontSize: buttonFontSize, color: Colors.black),
             )),
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
@@ -74,11 +75,11 @@ class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
     final registerFields = Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        buildTopPadding(topPadding, emailField),
+        buildTopPadding(topAndBottomPadding, emailField),
         Padding(
           padding: EdgeInsets.only(
-              top: mediaQuery.size.height / 15,
-              bottom: mediaQuery.size.height / 15),
+              top: topAndBottomPadding,
+              bottom: topAndBottomPadding),
           child: recoverPasswordButton,
         )
       ],
@@ -90,7 +91,7 @@ class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
             color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: <Widget>[
-            logo,
+            buildTopPadding(topAndBottomPadding, logo),
             registerFields,
           ],
         ));

@@ -18,8 +18,9 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-    final fontSize = mediaQuery.size.width / 15;
-    final topPadding = mediaQuery.size.height / 30;
+    final fieldFontSize = mediaQuery.size.width / 24;
+    final buttonFontSize = mediaQuery.size.width / 14;
+    final topAndBottomPadding = mediaQuery.size.height / 30;
 
     final logo = Material(
       color: Colors.transparent,
@@ -40,7 +41,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
             child: TextFormField(
               controller: _emailController,
               style: GoogleFonts.anton(
-                  fontSize: fontSize / 2, color: Colors.white),
+                  fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -61,7 +62,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
               obscureText: true,
               controller: _passwordController,
               style: GoogleFonts.anton(
-                  fontSize: fontSize / 2, color: Colors.white),
+                  fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -80,7 +81,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
                 mediaQuery.size.height / 150),
             child: Text(
               "entrar".toUpperCase(),
-              style: GoogleFonts.anton(fontSize: fontSize, color: Colors.black),
+              style: GoogleFonts.anton(fontSize: buttonFontSize, color: Colors.black),
             )),
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
@@ -95,8 +96,8 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
     final registerFields = Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        buildTopPadding(topPadding, emailField),
-        buildTopPadding(topPadding, passwordField),
+        buildTopPadding(topAndBottomPadding, emailField),
+        buildTopPadding(topAndBottomPadding, passwordField),
         Padding(
           padding: EdgeInsets.only(top: mediaQuery.size.height / 15),
           child: logInButton,
@@ -144,14 +145,14 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
             color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: <Widget>[
-            logo,
+            buildTopPadding(topAndBottomPadding, logo),
             registerFields,
             Padding(
               padding: EdgeInsets.fromLTRB(
                   0,
-                  mediaQuery.size.height / 15,
+                  topAndBottomPadding,
                   0,
-                  mediaQuery.size.height / 30),
+                  topAndBottomPadding),
               child: bottomContainer,
             )
           ],

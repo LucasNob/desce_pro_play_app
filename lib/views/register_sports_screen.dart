@@ -14,8 +14,8 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-    final fontSize = mediaQuery.size.width / 12;
-    //final topPadding = mediaQuery.size.height / 30;
+    final buttonFontSize = mediaQuery.size.width / 14;
+    final topAndBottomPadding = mediaQuery.size.height / 30;
 
     final List<SportsCheckBoxModel> sports = [
       SportsCheckBoxModel(name: "Futebol",  icon: Icons.sports_soccer),
@@ -48,23 +48,23 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
       ],
     );
 
-    final completeButton = ElevatedButton(
+    final completeRegisterButton = ElevatedButton(
         child: Padding(
             padding: EdgeInsets.fromLTRB(
-                mediaQuery.size.width / 10,
+                mediaQuery.size.width / 25,
                 mediaQuery.size.height / 150,
-                mediaQuery.size.width / 10,
+                mediaQuery.size.width / 25,
                 mediaQuery.size.height / 150),
             child: Text(
-              "COMPLETAR CADASTRO",
-              style: GoogleFonts.anton(fontSize: fontSize/1.5, color: Colors.black),
+              "completar cadastro".toUpperCase(),
+              style: GoogleFonts.anton(fontSize: buttonFontSize, color: Colors.black),
             )
         ),
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(15),
                 )
             )
         ),
@@ -81,14 +81,17 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
       ),
       child: Column(
         children: <Widget>[
-          logo,
           Padding(
-              padding: EdgeInsets.fromLTRB(0,mediaQuery.size.height/12,0,mediaQuery.size.width/12),
+              padding: EdgeInsets.only(top: topAndBottomPadding),
+              child: logo,
+          ),
+          Padding(
+              padding: EdgeInsets.only(top: mediaQuery.size.height/12, bottom: mediaQuery.size.width/12),
               child: sportsList
           ),
           Padding(
-              padding: EdgeInsets.fromLTRB(0, mediaQuery.size.height / 20, 0, mediaQuery.size.height / 20),
-              child: completeButton
+              padding: EdgeInsets.only(top: topAndBottomPadding, bottom: topAndBottomPadding),
+              child: completeRegisterButton
           ),
         ]
       ),
@@ -97,9 +100,8 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
     return Scaffold(
       backgroundColor: Color(0xffFF8A00),
         body: Form(
-            //key: _formKey,
             child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(0, mediaQuery.size.height / 12, 0, mediaQuery.size.height / 12),
+                padding: EdgeInsets.only(top: mediaQuery.size.height / 12, bottom: mediaQuery.size.height / 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -139,7 +141,8 @@ class _SportCheckboxWidgetState extends State<SportCheckboxWidget> {
     );
   }
 }
-class SportsCheckBoxModel{
+
+class SportsCheckBoxModel {
   SportsCheckBoxModel({required this.name,required this.icon,this.check= false});
 
   String name;
