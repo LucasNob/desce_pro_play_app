@@ -114,7 +114,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
         child: Text(
           "Cadastre-se",
           style: GoogleFonts.roboto(
-              fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+              fontSize: mediaQuery.size.width / 24, color: Colors.black, fontWeight: FontWeight.bold),
         ));
 
     final toForgetPasswordScreenButton = MaterialButton(
@@ -126,7 +126,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
         child: Text(
           "Esqueci minha senha",
           style: GoogleFonts.roboto(
-              fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+              fontSize: mediaQuery.size.width / 24, color: Colors.black, fontWeight: FontWeight.bold),
         ));
 
     final bottomContainer = Container(
