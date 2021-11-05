@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +22,10 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
     final fieldFontSize = mediaQuery.size.width / 24;
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
+
+    //if user loggedin go to main screen
+    //if(FirebaseAuth.instance.currentUser != null)
+      //Navigator.of(context).pushNamed(AppRoutes.user_profile);
 
     final logo = Material(
       color: Colors.transparent,
@@ -156,7 +161,8 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
               child: bottomContainer,
             )
           ],
-        ));
+        )
+    );
 
     return Scaffold(
         backgroundColor: Color(0xffFF8A00),
@@ -170,7 +176,10 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
                   children: [
                     homeContainer,
                   ],
-                ))));
+                )
+            )
+        )
+    );
   }
 
   Padding buildTopPadding(double topPadding, Material field) {

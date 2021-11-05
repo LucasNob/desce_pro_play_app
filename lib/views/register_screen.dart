@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:desce_pro_play_app/routes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -19,7 +20,8 @@ class _RegisterViewState extends State<RegisterScreen>{
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _repasswordController = TextEditingController();
 
-  String _gender = "";
+  String _gender = "Masculino";
+  String _errorMessage = "";
   int  _radioId = 0;
 
   @override
@@ -29,6 +31,35 @@ class _RegisterViewState extends State<RegisterScreen>{
     final fieldFontSize = mediaQuery.size.width / 24;
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
+
+    //uploads user data
+    void newUserData() async{
+      User? user = FirebaseAuth.instance.currentUser;
+      String emailId = user!.email.toString();
+
+      //TODO: error handling document upload
+      CollectionReference userdata = FirebaseFirestore.instance.collection('userdata');
+      await userdata.doc(emailId).set({
+        'first_name': _firstNameController.text,
+        'last_name': _lastNameController.text,
+        'birth_date': _birthDateController.text,
+        'phone_number': _phoneNumberController.text,
+        'user_gender': _gender,
+        'sports': []
+      });//.then((value) => print("Sucess")).catchError((error)=> print("error : $error"));
+    }
+
+    //Listen for user sing in status change on creation to upload data
+    FirebaseAuth.instance
+        .userChanges()
+        .listen((User? user) {
+      if (user == null) {
+        user = null;
+      } else {
+        user = FirebaseAuth.instance.currentUser;
+        newUserData();
+      }
+    });
 
     final logo = Material(
       color: Colors.transparent,
@@ -276,8 +307,21 @@ class _RegisterViewState extends State<RegisterScreen>{
             )
           )
         ),
-        onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.register_sports);
+        onPressed: () async {
+
+          String? errorCode;
+          try {
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text);
+          } on FirebaseAuthException catch(error){
+            errorCode = error.code;
+          }
+          if (errorCode == null) {
+            Navigator.of(context).pushNamed(AppRoutes.register_sports);
+          }
+          else
+            _showMyDialog(errorCode);
         }
     );
 
@@ -338,5 +382,33 @@ class _RegisterViewState extends State<RegisterScreen>{
           padding: EdgeInsets.only(top: topPadding),
           child: field,
         );
+  }
+  //TODO: custom error message implementation
+  Future<void> _showMyDialog(String errorCode) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title:  Text(errorCode),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(errorCode),
+                Text('Continuar?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

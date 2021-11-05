@@ -3,6 +3,7 @@ import 'package:desce_pro_play_app/views/forget_password_screen.dart';
 import 'package:desce_pro_play_app/views/home_login_screen.dart';
 import 'package:desce_pro_play_app/views/register_screen.dart';
 import 'package:desce_pro_play_app/views/register_sports_screen.dart';
+import 'package:desce_pro_play_app/views/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppRoutes {
@@ -13,6 +14,7 @@ class AppRoutes {
   static const String register_sports ='/register_sports';
   static const String forget_password_email ='/forget_password_email';
   static const String forget_password ='/forget_password';
+  static const String user_profile ='/user_profile';
 
   static Map<String, WidgetBuilder> define() {
     return {
@@ -21,6 +23,7 @@ class AppRoutes {
       register_sports: (context) => RegisterSportsScreen(),
       forget_password_email: (context) => ForgetPasswordEmailScreen(),
       forget_password: (context) => ForgetPasswordScreen(),
+      user_profile: (context) => UserProfileScreen(),
     };
   }
 }
