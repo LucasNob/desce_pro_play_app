@@ -17,7 +17,26 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
   TextEditingController _contatoController = TextEditingController();
   TextEditingController _cepController = TextEditingController();
   TextEditingController _sobreController = TextEditingController();
-  String dropdownValue = "Selecionar";
+  String dropdownValueSports = "Selecionar";
+  String dropdownValueQuadras = "Selecionar";
+  List<String> sports = [
+    "Selecionar",
+    "Futebol",
+    "Skate",
+    "Basquete",
+    "Football",
+    "Vôlei",
+    "Tênis",
+    "Outro"
+  ];
+  List<String> quadras = [
+    "Selecionar",
+    "Grama",
+    "Sintética",
+    "Madeira",
+    "Areia",
+    "Outro"
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +79,8 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
           ));
     }
 
-    Widget dropdownField(double width) {
+    Widget dropdownField(
+        double width, List<String> list, String dropdownValue) {
       return Material(
           color: Colors.grey,
           borderRadius: BorderRadius.circular(10),
@@ -80,8 +100,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
                     dropdownValue = newValue!;
                   });
                 },
-                items: <String>['Selecionar', 'Two', 'Free', 'Four']
-                    .map<DropdownMenuItem<String>>((String value) {
+                items: list.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value, style: TextStyle(color: Colors.black54)),
@@ -103,10 +122,17 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
                   10, textField(_taxaController, "Taxa de Entrada", 3)),
             ],
           ),
-          buildTopPadding(10, textField(_enderecoController, "Endereço", 1.1)),
-          buildTopPadding(10, textField(_contatoController, "Contato", 1.1)),
-          buildTopPadding(10, textField(_cepController, "CEP", 1.1)),
-          buildTopPadding(10, dropdownField(1.1)),
+          buildTopPadding(20, textField(_enderecoController, "Endereço", 1.1)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              buildTopPadding(20, textField(_contatoController, "Contato", 3)),
+              buildTopPadding(20, textField(_cepController, "CEP", 3)),
+            ],
+          ),
+          buildTopPadding(10, dropdownField(1.1, sports, dropdownValueSports)),
+          buildTopPadding(
+              10, dropdownField(1.1, quadras, dropdownValueQuadras)),
           buildTopPadding(10, textField(_sobreController, "Sobre", 1.1)),
         ],
       );
@@ -114,7 +140,9 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          leading: null,
+          leading: Image.asset("lib/resources/logoperfect.png",
+              height: mediaQuery.size.height / 4,
+              width: mediaQuery.size.width / 1.5),
           title: Text(
             "Cadastro de Local",
           ),
