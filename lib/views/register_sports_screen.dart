@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -69,7 +71,8 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
             )
         ),
         onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.home_login);
+          saveSports(sports);
+          Navigator.of(context).pushNamed(AppRoutes.user_profile);//temp user profile
         }
     );
 
@@ -111,6 +114,22 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
             )
         )
     );
+  }
+  saveSports(List<SportsCheckBoxModel> sports) async {
+    final selection = [];
+    sports.forEach((sport){
+      if (sport.check == true) {
+        selection.add(sport.name);
+      }
+    });
+    print(selection);
+    User? user = FirebaseAuth.instance.currentUser;
+    String emailId = user!.email.toString();
+
+    //TODO: error handling
+    CollectionReference userdata = FirebaseFirestore.instance.collection('userdata');
+    await userdata.doc(emailId)
+        .update({'sports': selection});
   }
 }
 
