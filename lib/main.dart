@@ -1,9 +1,10 @@
 import 'package:desce_pro_play_app/routes.dart';
 import 'package:desce_pro_play_app/views/home_login_screen.dart';
+import 'package:desce_pro_play_app/views/register_location_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Desce Pro Play',
       routes: AppRoutes.define(),
-      home: HomeLoginScreen(),
+      home: RegisterLocationScreen(),
     );
   }
 }

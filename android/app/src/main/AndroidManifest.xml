@@ -2,7 +2,8 @@
     package="br.facens.engsoftware.desceproplay.desce_pro_play_app">
    <application
         android:label="desce_pro_play_app"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

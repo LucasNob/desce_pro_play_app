@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterLocationScreen extends StatefulWidget {
   const RegisterLocationScreen({Key? key}) : super(key: key);
@@ -17,10 +18,16 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
   TextEditingController _contatoController = TextEditingController();
   TextEditingController _cepController = TextEditingController();
   TextEditingController _sobreController = TextEditingController();
-  String dropdownValueSports = "Selecionar";
-  String dropdownValueQuadras = "Selecionar";
+
+  String dropdownValueSports = "Esportes Praticáveis: ";
+  String dropdownValueQuadras = "Tipo de Quadras: ";
+
+  ImagePicker _picker = ImagePicker();
+  XFile? image;
+  dynamic _pickImageError;
+
   List<String> sports = [
-    "Selecionar",
+    "Esportes Praticáveis: ",
     "Futebol",
     "Skate",
     "Basquete",
@@ -30,7 +37,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     "Outro"
   ];
   List<String> quadras = [
-    "Selecionar",
+    "Tipo de Quadras: ",
     "Grama",
     "Sintética",
     "Madeira",
@@ -79,8 +86,38 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
           ));
     }
 
-    Widget dropdownField(
-        double width, List<String> list, String dropdownValue) {
+    void _onImageButtonPressed(context) async {
+      await _displayPickImageDialog(context!,
+          (double? maxWidth, double? maxHeight, int? quality) async {
+        try {
+          final pickedFile = await _picker.pickImage(
+            source: ImageSource.gallery,
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+            imageQuality: quality,
+          );
+          setState(() {
+            image = pickedFile;
+          });
+        } catch (e) {
+          setState(() {
+            _pickImageError = e;
+          });
+        }
+      });
+    }
+
+    Widget buttonImage() {
+      return IconButton(
+          onPressed: () async {
+            _onImageButtonPressed(context);
+          },
+          icon: Icon(Icons.house, size: 90),
+          iconSize: 80,
+          padding: EdgeInsets.all(4));
+    }
+
+    Widget dropdownField(double width, List<String> list, bool option) {
       return Material(
           color: Colors.grey,
           borderRadius: BorderRadius.circular(10),
@@ -89,7 +126,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
             child: Container(
               width: mediaQuery.size.width / width,
               child: DropdownButton<String>(
-                value: dropdownValue,
+                value: option ? dropdownValueSports : dropdownValueQuadras,
                 icon: const Icon(Icons.arrow_downward),
                 iconSize: 24,
                 elevation: 16,
@@ -97,7 +134,11 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
                     color: Colors.white, fontSize: fieldFontSize),
                 onChanged: (String? newValue) {
                   setState(() {
-                    dropdownValue = newValue!;
+                    if (option) {
+                      dropdownValueSports = newValue!;
+                    } else {
+                      dropdownValueQuadras = newValue!;
+                    }
                   });
                 },
                 items: list.map<DropdownMenuItem<String>>((String value) {
@@ -114,6 +155,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     Widget registerContainer() {
       return Column(
         children: [
+          buildTopPadding(0, buttonImage()),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -130,9 +172,8 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
               buildTopPadding(20, textField(_cepController, "CEP", 3)),
             ],
           ),
-          buildTopPadding(10, dropdownField(1.1, sports, dropdownValueSports)),
-          buildTopPadding(
-              10, dropdownField(1.1, quadras, dropdownValueQuadras)),
+          buildTopPadding(10, dropdownField(1.1, sports, true)),
+          buildTopPadding(10, dropdownField(1.1, quadras, false)),
           buildTopPadding(10, textField(_sobreController, "Sobre", 1.1)),
         ],
       );
@@ -164,4 +205,9 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
       child: field,
     );
   }
+
+  _displayPickImageDialog(
+      BuildContext buildContext,
+      Future<Null> Function(double? maxWidth, double? maxHeight, int? quality)
+          param1) {}
 }
