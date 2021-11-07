@@ -11,7 +11,7 @@ class RegisterScreen extends StatefulWidget {
   _RegisterViewState createState() => _RegisterViewState();
 }
 
-class _RegisterViewState extends State<RegisterScreen>{
+class _RegisterViewState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
@@ -23,7 +23,7 @@ class _RegisterViewState extends State<RegisterScreen>{
 
   String _gender = "Masculino";
   String _errorMessage = "";
-  int  _radioId = 0;
+  int _radioId = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -33,20 +33,22 @@ class _RegisterViewState extends State<RegisterScreen>{
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
 
-    void _showErrorSnack (String error) {
+    void _showErrorSnack(String error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error),
         ),
       );
     }
+
     //uploads user data
-    void newUserData() async{
+    void newUserData() async {
       User? user = FirebaseAuth.instance.currentUser;
       String emailId = user!.email.toString();
 
       //TODO: error handling document upload
-      CollectionReference userdata = FirebaseFirestore.instance.collection('userdata');
+      CollectionReference userdata =
+          FirebaseFirestore.instance.collection('userdata');
       await userdata.doc(emailId).set({
         'first_name': _firstNameController.text,
         'last_name': _lastNameController.text,
@@ -54,29 +56,26 @@ class _RegisterViewState extends State<RegisterScreen>{
         'phone_number': _phoneNumberController.text,
         'user_gender': _gender,
         'sports': []
-      });//.then((value) => print("Sucess")).catchError((error)=> print("error : $error"));
+      }); //.then((value) => print("Sucess")).catchError((error)=> print("error : $error"));
     }
-    void newUser(String email,String password) async{
+
+    void newUser(String email, String password) async {
       String? errorCode;
       try {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: _emailController.text,
-            password: _passwordController.text);
-      } on FirebaseAuthException catch(error){
+            email: _emailController.text, password: _passwordController.text);
+      } on FirebaseAuthException catch (error) {
         errorCode = error.code;
       }
       if (errorCode == null) {
         Navigator.of(context).pushNamed(AppRoutes.register_sports);
-      }
-      else
+      } else
         _showErrorSnack(errorCode);
       //_showError(errorCode);
     }
 
     //Listen for user sign in status change on creation to upload data
-    FirebaseAuth.instance
-        .userChanges()
-        .listen((User? user) {
+    FirebaseAuth.instance.userChanges().listen((User? user) {
       if (user == null) {
         user = null;
       } else {
@@ -95,24 +94,24 @@ class _RegisterViewState extends State<RegisterScreen>{
     );
 
     final firstNameField = Material(
-      color: Colors.grey,
-      borderRadius: BorderRadius.circular(10),
-      child: Padding(
-        padding: EdgeInsets.only(left: 20),
-        child: Container(
-          width: mediaQuery.size.width / 1.4,
-          child: TextFormField(
-            controller: _firstNameController,
-            style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
-            cursorColor: Colors.white,
-            decoration: InputDecoration(
+        color: Colors.grey,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: Container(
+            width: mediaQuery.size.width / 1.4,
+            child: TextFormField(
+              controller: _firstNameController,
+              style: GoogleFonts.anton(
+                  fontSize: fieldFontSize, color: Colors.white),
+              cursorColor: Colors.white,
+              decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: 'Nome',
+              ),
             ),
           ),
-        ),
-      )
-    );
+        ));
 
     final lastNameField = Material(
         color: Colors.grey,
@@ -123,7 +122,8 @@ class _RegisterViewState extends State<RegisterScreen>{
             width: mediaQuery.size.width / 1.4,
             child: TextFormField(
               controller: _lastNameController,
-              style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
+              style: GoogleFonts.anton(
+                  fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -131,8 +131,7 @@ class _RegisterViewState extends State<RegisterScreen>{
               ),
             ),
           ),
-        )
-    );
+        ));
 
     final birthDateField = Material(
         color: Colors.grey,
@@ -147,7 +146,8 @@ class _RegisterViewState extends State<RegisterScreen>{
                 FilteringTextInputFormatter.digitsOnly
               ],
               controller: _birthDateController,
-              style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
+              style: GoogleFonts.anton(
+                  fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -155,8 +155,7 @@ class _RegisterViewState extends State<RegisterScreen>{
               ),
             ),
           ),
-        )
-    );
+        ));
 
     final genderField = Material(
         color: Colors.transparent,
@@ -169,20 +168,21 @@ class _RegisterViewState extends State<RegisterScreen>{
                     new Radio(
                         value: 0,
                         groupValue: _radioId,
-                        onChanged:  (void newValue) {
+                        onChanged: (void newValue) {
                           setState(() {
                             _gender = "Masculino";
                             _radioId = 0;
                           });
-                        }
-                    ),
+                        }),
                     Padding(
-                      padding: EdgeInsets.only(left: mediaQuery.size.width/15),
-                      child: Text(
-                        'Masculino',
-                        style: GoogleFonts.anton(fontSize: fieldFontSize * 1.2, color: Colors.black),
-                      )
-                    )
+                        padding:
+                            EdgeInsets.only(left: mediaQuery.size.width / 15),
+                        child: Text(
+                          'Masculino',
+                          style: GoogleFonts.anton(
+                              fontSize: fieldFontSize * 1.2,
+                              color: Colors.black),
+                        ))
                   ],
                 ),
                 Row(
@@ -190,20 +190,21 @@ class _RegisterViewState extends State<RegisterScreen>{
                     new Radio(
                         value: 1,
                         groupValue: _radioId,
-                        onChanged:  (void newValue) {
+                        onChanged: (void newValue) {
                           setState(() {
                             _gender = "Feminino";
                             _radioId = 1;
                           });
-                        }
-                    ),
+                        }),
                     Padding(
-                        padding: EdgeInsets.only(left: mediaQuery.size.width/15),
+                        padding:
+                            EdgeInsets.only(left: mediaQuery.size.width / 15),
                         child: Text(
                           'Feminino',
-                          style: GoogleFonts.anton(fontSize: fieldFontSize * 1.2, color: Colors.black),
-                        )
-                    )
+                          style: GoogleFonts.anton(
+                              fontSize: fieldFontSize * 1.2,
+                              color: Colors.black),
+                        ))
                   ],
                 ),
                 Row(
@@ -211,26 +212,25 @@ class _RegisterViewState extends State<RegisterScreen>{
                     new Radio(
                         value: 2,
                         groupValue: _radioId,
-                        onChanged:  (void newValue) {
+                        onChanged: (void newValue) {
                           setState(() {
                             _gender = "Outro";
                             _radioId = 2;
                           });
-                        }
-                    ),
+                        }),
                     Padding(
-                        padding: EdgeInsets.only(left: mediaQuery.size.width/15),
+                        padding:
+                            EdgeInsets.only(left: mediaQuery.size.width / 15),
                         child: Text(
                           'Outro',
-                          style: GoogleFonts.anton(fontSize: fieldFontSize * 1.2, color: Colors.black),
-                        )
-                    )
+                          style: GoogleFonts.anton(
+                              fontSize: fieldFontSize * 1.2,
+                              color: Colors.black),
+                        ))
                   ],
                 )
               ],
-            )
-        )
-    );
+            )));
 
     final phoneNumberField = Material(
         color: Colors.grey,
@@ -245,7 +245,8 @@ class _RegisterViewState extends State<RegisterScreen>{
                 FilteringTextInputFormatter.digitsOnly
               ],
               controller: _phoneNumberController,
-              style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
+              style: GoogleFonts.anton(
+                  fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -253,8 +254,7 @@ class _RegisterViewState extends State<RegisterScreen>{
               ),
             ),
           ),
-        )
-    );
+        ));
 
     final emailField = Material(
         color: Colors.grey,
@@ -265,7 +265,8 @@ class _RegisterViewState extends State<RegisterScreen>{
             width: mediaQuery.size.width / 1.4,
             child: TextFormField(
               controller: _emailController,
-              style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
+              style: GoogleFonts.anton(
+                  fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -273,8 +274,7 @@ class _RegisterViewState extends State<RegisterScreen>{
               ),
             ),
           ),
-        )
-    );
+        ));
 
     final passwordField = Material(
         color: Colors.grey,
@@ -286,7 +286,8 @@ class _RegisterViewState extends State<RegisterScreen>{
             child: TextFormField(
               obscureText: true,
               controller: _passwordController,
-              style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
+              style: GoogleFonts.anton(
+                  fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -294,9 +295,7 @@ class _RegisterViewState extends State<RegisterScreen>{
               ),
             ),
           ),
-        )
-    );
-
+        ));
 
     final repasswordField = Material(
         color: Colors.grey,
@@ -308,7 +307,8 @@ class _RegisterViewState extends State<RegisterScreen>{
             child: TextFormField(
               obscureText: true,
               controller: _repasswordController,
-              style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
+              style: GoogleFonts.anton(
+                  fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -316,36 +316,32 @@ class _RegisterViewState extends State<RegisterScreen>{
               ),
             ),
           ),
-        )
-    );
+        ));
 
     final continueButton = ElevatedButton(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-              mediaQuery.size.width / 10,
-              mediaQuery.size.height / 150,
-              mediaQuery.size.width / 10,
-              mediaQuery.size.height / 150),
-          child: Text(
-            "continuar".toUpperCase(),
-            style: GoogleFonts.anton(fontSize: buttonFontSize, color: Colors.black),
-          )
-        ),
+            padding: EdgeInsets.fromLTRB(
+                mediaQuery.size.width / 10,
+                mediaQuery.size.height / 150,
+                mediaQuery.size.width / 10,
+                mediaQuery.size.height / 150),
+            child: Text(
+              "continuar".toUpperCase(),
+              style: GoogleFonts.anton(
+                  fontSize: buttonFontSize, color: Colors.black),
+            )),
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
+            backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
-            )
-          )
-        ),
+            ))),
         onPressed: () {
           if (_passwordController.text == _repasswordController.text)
-            newUser(_emailController.text,_passwordController.text);
+            newUser(_emailController.text, _passwordController.text);
           else
             _showErrorSnack("Senhas diferentes");
-        }
-    );
+        });
 
     final registerFields = Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -362,48 +358,43 @@ class _RegisterViewState extends State<RegisterScreen>{
     );
 
     final registerContainer = Container(
-      width: mediaQuery.size.width / 1.2,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10)
-      ),
-      child: Column(
-        children: <Widget>[
-          buildTopPadding(topAndBottomPadding, logo),
-          Padding(
-            padding: EdgeInsets.only(top: topAndBottomPadding),
-            child: registerFields
-          ),
-          Padding(
-              padding: EdgeInsets.only(top: topAndBottomPadding, bottom: topAndBottomPadding),
-              child: continueButton
-          ),
-        ],
-      )
-    );
+        width: mediaQuery.size.width / 1.2,
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
+        child: Column(
+          children: <Widget>[
+            buildTopPadding(topAndBottomPadding, logo),
+            Padding(
+                padding: EdgeInsets.only(top: topAndBottomPadding),
+                child: registerFields),
+            Padding(
+                padding: EdgeInsets.only(
+                    top: topAndBottomPadding, bottom: topAndBottomPadding),
+                child: continueButton),
+          ],
+        ));
 
     return Scaffold(
-      backgroundColor: Color(0xffFF8A00),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.only(top: mediaQuery.size.height / 12, bottom: mediaQuery.size.height / 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              registerContainer,
-            ],
-          )
-        )
-      )
-    );
+        backgroundColor: Color(0xffFF8A00),
+        body: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                    top: mediaQuery.size.height / 12,
+                    bottom: mediaQuery.size.height / 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    registerContainer,
+                  ],
+                ))));
   }
 
   Padding buildTopPadding(double topPadding, Material field) {
     return Padding(
-          padding: EdgeInsets.only(top: topPadding),
-          child: field,
-        );
+      padding: EdgeInsets.only(top: topPadding),
+      child: field,
+    );
   }
 
   Future<void> _showError(String errorCode) async {
@@ -412,7 +403,7 @@ class _RegisterViewState extends State<RegisterScreen>{
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Text(errorCode),
+          title: Text(errorCode),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
