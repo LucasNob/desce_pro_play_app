@@ -54,7 +54,7 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                 Text("Nome: ${data['first_name']}"),
                 Text("Sobrenome: ${data['last_name']}"),
                 Text("Telefone: ${data['phone_number']}"),
-                Text("Aniversario: ${data['phone_number']}"),
+                Text("Aniversario: ${data['birth_date']}"),
                 Text("Sexo: ${data['user_gender']}")
               ],
             ),
