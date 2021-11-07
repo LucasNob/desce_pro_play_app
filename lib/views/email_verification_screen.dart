@@ -6,45 +6,18 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../routes.dart';
 
-class RegisterSportsScreen extends StatefulWidget {
+class EmailVerificationScreen extends StatefulWidget {
   @override
-  _RegisterSportsViewState createState() => _RegisterSportsViewState();
+  _EmailVerificationViewState createState() => _EmailVerificationViewState();
 }
 
-class _RegisterSportsViewState extends State<RegisterSportsScreen> {
+class _EmailVerificationViewState extends State<EmailVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-    final buttonFontSize = mediaQuery.size.width / 14;
+    final fontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
-
-    final List<SportsCheckBoxModel> sports = [
-      SportsCheckBoxModel(name: "Futebol",  icon: Icons.sports_soccer),
-      SportsCheckBoxModel(name: "Skate",    icon: Icons.skateboarding),
-      SportsCheckBoxModel(name: "Basquete", icon: Icons.sports_basketball),
-      SportsCheckBoxModel(name: "Football", icon: Icons.sports_football),
-      SportsCheckBoxModel(name: "Vôlei", icon: Icons.sports_volleyball),
-      SportsCheckBoxModel(name: "Tênis", icon: Icons.sports_tennis),
-      SportsCheckBoxModel(name: "Outro", icon: Icons.sports),
-    ];
-
-    saveSports(List<SportsCheckBoxModel> sports) async {
-      final selection = [];
-      sports.forEach((sport){
-        if (sport.check == true) {
-          selection.add(sport.name);
-        }
-      });
-      print(selection);
-      User? user = FirebaseAuth.instance.currentUser;
-      String emailId = user!.email.toString();
-
-      CollectionReference userdata = FirebaseFirestore.instance.collection('userdata');
-      await userdata.doc(emailId).update({'sports': selection});
-
-      user.sendEmailVerification();
-    }
 
     final logo = Material(
       color: Colors.transparent,
@@ -55,19 +28,7 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
       ),
     );
 
-    final sportsList = Column(
-      children: [
-        SportCheckboxWidget(item: sports[0]),
-        SportCheckboxWidget(item: sports[1]),
-        SportCheckboxWidget(item: sports[2]),
-        SportCheckboxWidget(item: sports[3]),
-        SportCheckboxWidget(item: sports[4]),
-        SportCheckboxWidget(item: sports[5]),
-        SportCheckboxWidget(item: sports[6]),
-      ],
-    );
-
-    final completeRegisterButton = ElevatedButton(
+    final loginScreenButton = ElevatedButton(
         child: Padding(
             padding: EdgeInsets.fromLTRB(
                 mediaQuery.size.width / 25,
@@ -75,8 +36,8 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
                 mediaQuery.size.width / 25,
                 mediaQuery.size.height / 150),
             child: Text(
-              "completar cadastro".toUpperCase(),
-              style: GoogleFonts.anton(fontSize: buttonFontSize, color: Colors.black),
+              "Continuar".toUpperCase(),
+              style: GoogleFonts.anton(fontSize: fontSize, color: Colors.black),
             )
         ),
         style: ButtonStyle(
@@ -88,10 +49,10 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
             )
         ),
         onPressed: () {
-          saveSports(sports);
-          Navigator.of(context).pushNamed(AppRoutes.email_verification);//temp user profile
+          Navigator.of(context).pushNamed(AppRoutes.home_login);//temp user profile
         }
     );
+
 
     final sportsContainer = Container(
       width: mediaQuery.size.width / 1.2,
@@ -107,11 +68,19 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
           ),
           Padding(
               padding: EdgeInsets.only(top: mediaQuery.size.height/12, bottom: mediaQuery.size.width/12),
-              child: sportsList
+              child: Text(
+                  "Email não verificado",
+                  style: GoogleFonts.anton(fontSize: fontSize, color: Colors.black),)
           ),
           Padding(
               padding: EdgeInsets.only(top: topAndBottomPadding, bottom: topAndBottomPadding),
-              child: completeRegisterButton
+              child: Text(
+                "Vasculhe a sua caixa de entrada",
+                style: GoogleFonts.anton(fontSize: fontSize/2, color: Colors.black))
+          ),
+          Padding(
+              padding: EdgeInsets.only(top: topAndBottomPadding, bottom: topAndBottomPadding),
+              child: loginScreenButton
           ),
         ]
       ),

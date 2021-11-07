@@ -3,6 +3,7 @@ import 'package:desce_pro_play_app/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -32,6 +33,13 @@ class _RegisterViewState extends State<RegisterScreen>{
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
 
+    void _showErrorSnack (String error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+        ),
+      );
+    }
     //uploads user data
     void newUserData() async{
       User? user = FirebaseAuth.instance.currentUser;
@@ -48,8 +56,24 @@ class _RegisterViewState extends State<RegisterScreen>{
         'sports': []
       });//.then((value) => print("Sucess")).catchError((error)=> print("error : $error"));
     }
+    void newUser(String email,String password) async{
+      String? errorCode;
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: _emailController.text,
+            password: _passwordController.text);
+      } on FirebaseAuthException catch(error){
+        errorCode = error.code;
+      }
+      if (errorCode == null) {
+        Navigator.of(context).pushNamed(AppRoutes.register_sports);
+      }
+      else
+        _showErrorSnack(errorCode);
+      //_showError(errorCode);
+    }
 
-    //Listen for user sing in status change on creation to upload data
+    //Listen for user sign in status change on creation to upload data
     FirebaseAuth.instance
         .userChanges()
         .listen((User? user) {
@@ -118,6 +142,10 @@ class _RegisterViewState extends State<RegisterScreen>{
           child: Container(
             width: mediaQuery.size.width / 1.4,
             child: TextFormField(
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
               controller: _birthDateController,
               style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
@@ -212,6 +240,10 @@ class _RegisterViewState extends State<RegisterScreen>{
           child: Container(
             width: mediaQuery.size.width / 1.4,
             child: TextFormField(
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
               controller: _phoneNumberController,
               style: GoogleFonts.anton(fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
@@ -307,21 +339,11 @@ class _RegisterViewState extends State<RegisterScreen>{
             )
           )
         ),
-        onPressed: () async {
-
-          String? errorCode;
-          try {
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                email: _emailController.text,
-                password: _passwordController.text);
-          } on FirebaseAuthException catch(error){
-            errorCode = error.code;
-          }
-          if (errorCode == null) {
-            Navigator.of(context).pushNamed(AppRoutes.register_sports);
-          }
+        onPressed: () {
+          if (_passwordController.text == _repasswordController.text)
+            newUser(_emailController.text,_passwordController.text);
           else
-            _showMyDialog(errorCode);
+            _showErrorSnack("Senhas diferentes");
         }
     );
 
@@ -383,8 +405,8 @@ class _RegisterViewState extends State<RegisterScreen>{
           child: field,
         );
   }
-  //TODO: custom error message implementation
-  Future<void> _showMyDialog(String errorCode) async {
+
+  Future<void> _showError(String errorCode) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
