@@ -23,9 +23,32 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
 
-    //if user loggedin go to main screen
-    //if(FirebaseAuth.instance.currentUser != null)
-      //Navigator.of(context).pushNamed(AppRoutes.user_profile);
+    void _showErrorSnack (String error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+        ),
+      );
+    }
+
+    void userSignIn(String email,String password) async{
+      String? errorCode;
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: email,
+            password: password);
+      } on FirebaseAuthException catch(error){
+        errorCode = error.code;
+      }
+      if (errorCode == null) {
+        if (FirebaseAuth.instance.currentUser!.emailVerified)
+          Navigator.of(context).pushNamed(AppRoutes.user_profile);
+        else
+          Navigator.of(context).pushNamed(AppRoutes.email_verification);
+      }
+      else
+        _showErrorSnack(errorCode);
+    }
 
     final logo = Material(
       color: Colors.transparent,
@@ -95,7 +118,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
               borderRadius: BorderRadius.circular(15),
             ))),
         onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.register_sports);
+          Navigator.of(context).pushNamed(AppRoutes.user_profile);
         });
 
     final registerFields = Column(

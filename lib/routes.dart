@@ -1,3 +1,4 @@
+import 'package:desce_pro_play_app/views/email_verification_screen.dart';
 import 'package:desce_pro_play_app/views/forget_password_email_screen.dart';
 import 'package:desce_pro_play_app/views/forget_password_screen.dart';
 import 'package:desce_pro_play_app/views/home_login_screen.dart';
@@ -15,6 +16,7 @@ class AppRoutes {
   static const String forget_password_email ='/forget_password_email';
   static const String forget_password ='/forget_password';
   static const String user_profile ='/user_profile';
+  static const String email_verification ='/email_verification';
 
   static Map<String, WidgetBuilder> define() {
     return {
@@ -24,6 +26,7 @@ class AppRoutes {
       forget_password_email: (context) => ForgetPasswordEmailScreen(),
       forget_password: (context) => ForgetPasswordScreen(),
       user_profile: (context) => UserProfileScreen(),
+      email_verification: (context) => EmailVerificationScreen(),
     };
   }
 }
