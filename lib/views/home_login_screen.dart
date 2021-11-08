@@ -23,7 +23,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
 
-    void _showErrorSnack (String error) {
+    void _showErrorSnack(String error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error),
@@ -31,13 +31,12 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
       );
     }
 
-    void userSignIn(String email,String password) async{
+    void userSignIn(String email, String password) async {
       String? errorCode;
       try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: email,
-            password: password);
-      } on FirebaseAuthException catch(error){
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+      } on FirebaseAuthException catch (error) {
         errorCode = error.code;
       }
       if (errorCode == null) {
@@ -45,8 +44,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
           Navigator.of(context).pushNamed(AppRoutes.user_profile);
         else
           Navigator.of(context).pushNamed(AppRoutes.email_verification);
-      }
-      else
+      } else
         _showErrorSnack(errorCode);
     }
 
@@ -109,7 +107,8 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
                 mediaQuery.size.height / 150),
             child: Text(
               "entrar".toUpperCase(),
-              style: GoogleFonts.anton(fontSize: buttonFontSize, color: Colors.black),
+              style: GoogleFonts.anton(
+                  fontSize: buttonFontSize, color: Colors.black),
             )),
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
@@ -177,32 +176,27 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
             registerFields,
             Padding(
               padding: EdgeInsets.fromLTRB(
-                  0,
-                  topAndBottomPadding,
-                  0,
-                  topAndBottomPadding),
+                  0, topAndBottomPadding, 0, topAndBottomPadding),
               child: bottomContainer,
             )
           ],
-        )
-    );
+        ));
 
-    return Scaffold(
-        backgroundColor: Color(0xffFF8A00),
-        body: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(0, mediaQuery.size.height / 12, 0,
-                    mediaQuery.size.height / 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    homeContainer,
-                  ],
-                )
-            )
-        )
-    );
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+            backgroundColor: Color(0xffFF8A00),
+            body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(0, mediaQuery.size.height / 12,
+                        0, mediaQuery.size.height / 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        homeContainer,
+                      ],
+                    )))));
   }
 
   Padding buildTopPadding(double topPadding, Material field) {
