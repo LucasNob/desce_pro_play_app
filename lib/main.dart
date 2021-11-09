@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Desce Pro Play',
       routes: AppRoutes.define(),
+      // alterar antes de subir a versão final
       home: RegisterLocationScreen(),
     );
   }

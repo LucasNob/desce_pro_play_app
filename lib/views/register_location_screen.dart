@@ -21,6 +21,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
 
   String dropdownValueSports = "Esportes Praticáveis: ";
   String dropdownValueQuadras = "Tipo de Quadras: ";
+  bool privado = false;
 
   ImagePicker _picker = ImagePicker();
   XFile? image;
@@ -117,6 +118,18 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
           padding: EdgeInsets.all(4));
     }
 
+    Widget checkboxLocation(bool select) {
+      return Checkbox(
+          value: select,
+          checkColor: Colors.white,
+          activeColor: Colors.black54,
+          onChanged: (bool? value) {
+            setState(() {
+              privado = value!;
+            });
+          });
+    }
+
     Widget dropdownField(double width, List<String> list, bool option) {
       return Material(
           color: Colors.grey,
@@ -175,6 +188,9 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
           buildTopPadding(10, dropdownField(1.1, sports, true)),
           buildTopPadding(10, dropdownField(1.1, quadras, false)),
           buildTopPadding(10, textField(_sobreController, "Sobre", 1.1)),
+          buildTopPadding(10, checkboxLocation(true)),
+          //  buildTopPadding(
+          //     10, textField(_sobreController, "Taxa de utilização", 1.1)),
         ],
       );
     }
