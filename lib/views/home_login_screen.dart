@@ -117,7 +117,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
               borderRadius: BorderRadius.circular(15),
             ))),
         onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.user_profile);
+          userSignIn(_emailController.text, _passwordController.text);
         });
 
     final registerFields = Column(
