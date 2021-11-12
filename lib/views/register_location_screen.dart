@@ -118,9 +118,9 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
           padding: EdgeInsets.all(4));
     }
 
-    Widget checkboxLocation(bool select) {
+    Widget checkboxLocation() {
       return Checkbox(
-          value: select,
+          value: privado,
           checkColor: Colors.white,
           activeColor: Colors.black54,
           onChanged: (bool? value) {
@@ -168,7 +168,6 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     Widget registerContainer() {
       return Column(
         children: [
-          buildTopPadding(0, buttonImage()),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -177,20 +176,29 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
                   10, textField(_taxaController, "Taxa de Entrada", 3)),
             ],
           ),
-          buildTopPadding(20, textField(_enderecoController, "Endereço", 1.1)),
+          buildTopPadding(15, textField(_enderecoController, "Endereço", 1.1)),
+          buildTopPadding(15, textField(_cepController, "CEP", 1.1)),
+          buildTopPadding(15, dropdownField(1.1, sports, true)),
+          buildTopPadding(15, dropdownField(1.1, quadras, false)),
+          buildTopPadding(15, textField(_sobreController, "Sobre", 1.1)),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildTopPadding(20, textField(_contatoController, "Contato", 3)),
-              buildTopPadding(20, textField(_cepController, "CEP", 3)),
+              buildTopPadding(10, checkboxLocation()),
+              buildTopPadding(
+                  10,
+                  Text(
+                    "Privado",
+                    style: GoogleFonts.anton(
+                        color: Colors.black54, fontSize: fieldFontSize),
+                  )),
             ],
           ),
-          buildTopPadding(10, dropdownField(1.1, sports, true)),
-          buildTopPadding(10, dropdownField(1.1, quadras, false)),
-          buildTopPadding(10, textField(_sobreController, "Sobre", 1.1)),
-          buildTopPadding(10, checkboxLocation(true)),
-          //  buildTopPadding(
-          //     10, textField(_sobreController, "Taxa de utilização", 1.1)),
+          Visibility(
+            child: buildTopPadding(
+                15, textField(_sobreController, "Taxa de utilização", 1.1)),
+            visible: privado,
+          ),
         ],
       );
     }
