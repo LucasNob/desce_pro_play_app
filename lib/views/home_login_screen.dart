@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +22,31 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
     final fieldFontSize = mediaQuery.size.width / 24;
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
+
+    void _showErrorSnack(String error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+        ),
+      );
+    }
+
+    void userSignIn(String email, String password) async {
+      String? errorCode;
+      try {
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+      } on FirebaseAuthException catch (error) {
+        errorCode = error.code;
+      }
+      if (errorCode == null) {
+        if (FirebaseAuth.instance.currentUser!.emailVerified)
+          Navigator.of(context).pushNamed(AppRoutes.user_profile);
+        else
+          Navigator.of(context).pushNamed(AppRoutes.email_verification);
+      } else
+        _showErrorSnack(errorCode);
+    }
 
     final logo = Material(
       color: Colors.transparent,
@@ -81,7 +107,8 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
                 mediaQuery.size.height / 150),
             child: Text(
               "entrar".toUpperCase(),
-              style: GoogleFonts.anton(fontSize: buttonFontSize, color: Colors.black),
+              style: GoogleFonts.anton(
+                  fontSize: buttonFontSize, color: Colors.black),
             )),
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
@@ -90,7 +117,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
               borderRadius: BorderRadius.circular(15),
             ))),
         onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.register_sports);
+          userSignIn(_emailController.text, _passwordController.text);
         });
 
     final registerFields = Column(
@@ -149,28 +176,27 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
             registerFields,
             Padding(
               padding: EdgeInsets.fromLTRB(
-                  0,
-                  topAndBottomPadding,
-                  0,
-                  topAndBottomPadding),
+                  0, topAndBottomPadding, 0, topAndBottomPadding),
               child: bottomContainer,
             )
           ],
         ));
 
-    return Scaffold(
-        backgroundColor: Color(0xffFF8A00),
-        body: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(0, mediaQuery.size.height / 12, 0,
-                    mediaQuery.size.height / 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    homeContainer,
-                  ],
-                ))));
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+            backgroundColor: Color(0xffFF8A00),
+            body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(0, mediaQuery.size.height / 12,
+                        0, mediaQuery.size.height / 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        homeContainer,
+                      ],
+                    )))));
   }
 
   Padding buildTopPadding(double topPadding, Material field) {
