@@ -181,7 +181,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
           ),
           Visibility(
             child: buildTopPadding(
-                5, textField(_sobreController, "Taxa de utilização", 1.1)),
+                5, textField(_taxaController, "Taxa de utilização", 1.1)),
             visible: privado,
           ),
         ],
