@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -23,10 +26,6 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
   String dropdownValueQuadras = "Tipo de Quadras: ";
   bool privado = false;
 
-  ImagePicker _picker = ImagePicker();
-  XFile? image;
-  dynamic _pickImageError;
-
   List<String> sports = [
     "Esportes Praticáveis: ",
     "Futebol",
@@ -45,6 +44,20 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     "Areia",
     "Outro"
   ];
+
+  File? image;
+
+  Future pickimage() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+
+      final imagetemporary = File(image.path);
+      setState(() => this.image = imagetemporary);
+    } on PlatformException catch (e) {
+      print('Erro ao selecionar imagem');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,37 +100,6 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
           ));
     }
 
-    void _onImageButtonPressed(context) async {
-      await _displayPickImageDialog(context!,
-          (double? maxWidth, double? maxHeight, int? quality) async {
-        try {
-          final pickedFile = await _picker.pickImage(
-            source: ImageSource.gallery,
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-            imageQuality: quality,
-          );
-          setState(() {
-            image = pickedFile;
-          });
-        } catch (e) {
-          setState(() {
-            _pickImageError = e;
-          });
-        }
-      });
-    }
-
-    Widget buttonImage() {
-      return IconButton(
-          onPressed: () async {
-            _onImageButtonPressed(context);
-          },
-          icon: Icon(Icons.house, size: 90),
-          iconSize: 80,
-          padding: EdgeInsets.all(4));
-    }
-
     Widget checkboxLocation() {
       return Checkbox(
           value: privado,
@@ -128,6 +110,15 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
               privado = value!;
             });
           });
+    }
+
+    Widget buttonImage() {
+      return IconButton(
+        icon: Icon(Icons.home),
+        onPressed: () => pickimage(),
+        iconSize: 80,
+        padding: EdgeInsets.zero,
+      );
     }
 
     Widget dropdownField(double width, List<String> list, bool option) {
@@ -168,25 +159,19 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     Widget registerContainer() {
       return Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              buildTopPadding(10, textField(_nameController, "Nome", 3)),
-              buildTopPadding(
-                  10, textField(_taxaController, "Taxa de Entrada", 3)),
-            ],
-          ),
-          buildTopPadding(15, textField(_enderecoController, "Endereço", 1.1)),
-          buildTopPadding(15, textField(_cepController, "CEP", 1.1)),
-          buildTopPadding(15, dropdownField(1.1, sports, true)),
-          buildTopPadding(15, dropdownField(1.1, quadras, false)),
-          buildTopPadding(15, textField(_sobreController, "Sobre", 1.1)),
+          buildTopPadding(0, buttonImage()),
+          buildTopPadding(12, textField(_nameController, "Nome", 1.1)),
+          buildTopPadding(12, textField(_enderecoController, "Endereço", 1.1)),
+          buildTopPadding(12, textField(_cepController, "CEP", 1.1)),
+          buildTopPadding(12, dropdownField(1.1, sports, true)),
+          buildTopPadding(12, dropdownField(1.1, quadras, false)),
+          buildTopPadding(12, textField(_sobreController, "Sobre", 1.1)),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              buildTopPadding(10, checkboxLocation()),
+              buildTopPadding(0, checkboxLocation()),
               buildTopPadding(
-                  10,
+                  0,
                   Text(
                     "Privado",
                     style: GoogleFonts.anton(
@@ -196,7 +181,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
           ),
           Visibility(
             child: buildTopPadding(
-                15, textField(_sobreController, "Taxa de utilização", 1.1)),
+                5, textField(_sobreController, "Taxa de utilização", 1.1)),
             visible: privado,
           ),
         ],
@@ -229,9 +214,4 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
       child: field,
     );
   }
-
-  _displayPickImageDialog(
-      BuildContext buildContext,
-      Future<Null> Function(double? maxWidth, double? maxHeight, int? quality)
-          param1) {}
 }
