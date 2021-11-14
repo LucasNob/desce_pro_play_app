@@ -33,6 +33,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_fonts: ^2.0.0
   fluttertoast: ^8.0.8
+  image_picker: ^0.8.4+4
 
 dev_dependencies:
   flutter_test:
@@ -51,6 +52,8 @@ flutter:
 
   assets:
     - lib/resources/
+    - lib/resources/logonowhite.png
+    - lib/resources/logoperfect.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
