@@ -25,11 +25,9 @@ class AppRoutes {
       register: (context) => RegisterScreen(),
       register_sports: (context) => RegisterSportsScreen(),
       forget_password_email: (context) => ForgetPasswordEmailScreen(),
-      forget_password: (context) => ForgetPasswordScreen(),
       register_location: (context) => RegisterLocationScreen(),
       user_profile: (context) => UserProfileScreen(),
       email_verification: (context) => EmailVerificationScreen(),
-
     };
   }
 }
