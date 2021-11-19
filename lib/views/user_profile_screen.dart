@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../routes.dart';
 
@@ -14,28 +20,48 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileViewState extends State<UserProfileScreen> {
+  User? currentUser = FirebaseAuth.instance.currentUser;
+  CollectionReference userData =
+      FirebaseFirestore.instance.collection('userdata');
+  File? _userImage;
+  final picker = ImagePicker();
+
+  Future uploadImageToFirebase() async {
+    String fileName = basename(_userImage!.path);
+
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference firebaseStorageRef = storage.ref().child('uploads/$fileName');
+    UploadTask uploadTask = firebaseStorageRef.putFile(_userImage!);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    taskSnapshot.ref.getDownloadURL().then((value) => print("Done: $value"));
+  }
+
+  Future pickImage() async {
+    try {
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+      setState(() {
+        _userImage = File(pickedFile!.path);
+        uploadImageToFirebase();
+      });
+    } on PlatformException catch (e) {
+      print("Falha ao escolher foto: $e");
+    }
+  }
+
+  Text buildText(String text, fontSize, color) {
+    return Text(text,
+        style: GoogleFonts.anton(fontSize: fontSize, color: color));
+  }
+
   @override
   Widget build(BuildContext context) {
-    User? currentUser = FirebaseAuth.instance.currentUser;
-    CollectionReference userData =
-        FirebaseFirestore.instance.collection('userdata');
-
     final mediaQuery = MediaQuery.of(context);
-
     final labelFontSize = mediaQuery.size.width / 22;
     final valueFontSize = mediaQuery.size.width / 18;
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
 
-    //on user log out
-    FirebaseAuth.instance.userChanges().listen((User? user) {
-      if (user == null)
-        Navigator.of(context).pushNamed(AppRoutes.home_login);
-      else
-        user = null;
-    });
-
-    //loads user data
     final loadProfile = FutureBuilder<DocumentSnapshot>(
         future: userData.doc(currentUser!.email).get(),
         builder:
@@ -49,6 +75,7 @@ class _UserProfileViewState extends State<UserProfileScreen> {
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data =
                 snapshot.data!.data() as Map<String, dynamic>;
+
             return Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,12 +83,11 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Nome",
-                          style: GoogleFonts.anton(
-                              fontSize: labelFontSize, color: Colors.grey)),
-                      Text("${data['first_name']}",
-                          style: GoogleFonts.anton(
-                              fontSize: valueFontSize, color: Colors.black)),
+                      buildText("Nome", labelFontSize, Colors.grey),
+                      buildText(
+                          '${data['first_name']}', valueFontSize, Colors.black),
+                      buildText(
+                          "${data['last_name']}", valueFontSize, Colors.black)
                     ],
                   ),
                   Padding(
@@ -70,13 +96,9 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Nascimento",
-                              style: GoogleFonts.anton(
-                                  fontSize: labelFontSize, color: Colors.grey)),
-                          Text("${data['birth_date']}",
-                              style: GoogleFonts.anton(
-                                  fontSize: valueFontSize,
-                                  color: Colors.black)),
+                          buildText("Nascimento", labelFontSize, Colors.grey),
+                          buildText("${data['birth_date']}", valueFontSize,
+                              Colors.black)
                         ],
                       )),
                   Padding(
@@ -84,12 +106,9 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Sexo",
-                            style: GoogleFonts.anton(
-                                fontSize: labelFontSize, color: Colors.grey)),
-                        Text("${data['user_gender']}",
-                            style: GoogleFonts.anton(
-                                fontSize: valueFontSize, color: Colors.black)),
+                        buildText("Sexo", labelFontSize, Colors.grey),
+                        buildText("${data['user_gender']}", valueFontSize,
+                            Colors.black)
                       ],
                     ),
                   ),
@@ -111,12 +130,49 @@ class _UserProfileViewState extends State<UserProfileScreen> {
           return Text("loading...");
         });
 
+    final openGallery = IconButton(
+      icon: Icon(Icons.photo_camera),
+      onPressed: () {
+        pickImage();
+      },
+    );
+
+    final userAvatar = Material(
+        child: _userImage != null
+            ? ClipOval(
+                child: Image.file(
+                  _userImage!,
+                  width: mediaQuery.size.width / 2.5,
+                  height: mediaQuery.size.height / 4.75,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : ClipOval(
+                child: Image.asset(
+                  "lib/resources/user_default_profile_image.png",
+                  width: mediaQuery.size.width / 2.5,
+                  height: mediaQuery.size.height / 4.75,
+                  fit: BoxFit.cover,
+                ),
+              ));
+
+    final profileImage = Column(
+      children: [userAvatar, openGallery],
+    );
+
     final informationsContainer = Container(
       width: mediaQuery.size.width / 1.2,
       height: mediaQuery.size.height / 2.3,
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [loadProfile, loadProfile]),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Padding(
+          padding: EdgeInsets.only(right: mediaQuery.size.width / 14),
+          child: loadProfile,
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [profileImage],
+        ),
+      ]),
     );
 
     final toLocationButton = ElevatedButton(
@@ -164,7 +220,19 @@ class _UserProfileViewState extends State<UserProfileScreen> {
         Padding(
           padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
           child: toLocationButton,
-        )
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
+          child: toLocationButton,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
+          child: toLocationButton,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
+          child: toLocationButton,
+        ),
       ]),
     );
 
@@ -194,7 +262,8 @@ class _UserProfileViewState extends State<UserProfileScreen> {
           informationsContainer,
           locationsContainer,
           Padding(
-            padding: EdgeInsets.only(top: topAndBottomPadding),
+            padding: EdgeInsets.only(
+                top: topAndBottomPadding, bottom: topAndBottomPadding),
             child: newLocationButton,
           )
         ],
@@ -202,32 +271,37 @@ class _UserProfileViewState extends State<UserProfileScreen> {
     );
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xffFF8A00),
-          centerTitle: true,
-          leading: IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.chevron_left, size: mediaQuery.size.width / 10),
-          ),
-          title: Text(
-            "Meu Perfil",
-            style: GoogleFonts.anton(
-                fontSize: mediaQuery.size.width / 14, color: Colors.white),
-          ),
-          actions: [
-            IconButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                },
-                icon: Icon(Icons.logout_rounded,
-                    size: mediaQuery.size.width / 10))
-          ],
+      appBar: AppBar(
+        backgroundColor: Color(0xffFF8A00),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.chevron_left, size: mediaQuery.size.width / 10),
         ),
-        body: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Padding(
-            padding: EdgeInsets.only(top: topAndBottomPadding),
-            child: bodyContainer,
-          ),
-        ]));
+        title: Text(
+          "Meu Perfil",
+          style: GoogleFonts.anton(
+              fontSize: mediaQuery.size.width / 14, color: Colors.white),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.userChanges().listen((User? user) {
+                  user = null;
+                });
+                FirebaseAuth.instance.signOut();
+                Navigator.pushReplacementNamed(context, "/");
+              },
+              icon: Icon(Icons.exit_to_app, size: mediaQuery.size.width / 10))
+        ],
+      ),
+      body: SingleChildScrollView(
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Padding(
+          padding: EdgeInsets.only(top: topAndBottomPadding),
+          child: bodyContainer,
+        ),
+      ])),
+    );
   }
 }
