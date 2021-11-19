@@ -15,10 +15,16 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
+  Padding buildTopPadding(double topPadding, Material field) {
+    return Padding(
+      padding: EdgeInsets.only(top: topPadding),
+      child: field,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-
     final fieldFontSize = mediaQuery.size.width / 24;
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
@@ -31,21 +37,25 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
       );
     }
 
-    void userSignIn(String email, String password) async {
+    Future userSignIn(String email, String password) async {
       String? errorCode;
+
       try {
-        await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
+        User? user = (await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        ))
+            .user;
+
+        if (user!.emailVerified) {
+          print("Logged as: " + user.email.toString());
+          Navigator.of(context).pushNamed(AppRoutes.user_profile);
+        } else
+          Navigator.of(context).pushNamed(AppRoutes.email_verification);
       } on FirebaseAuthException catch (error) {
         errorCode = error.code;
-      }
-      if (errorCode == null) {
-        if (FirebaseAuth.instance.currentUser!.emailVerified)
-          Navigator.of(context).pushNamed(AppRoutes.user_profile);
-        else
-          Navigator.of(context).pushNamed(AppRoutes.email_verification);
-      } else
         _showErrorSnack(errorCode);
+      }
     }
 
     final logo = Material(
@@ -197,12 +207,5 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
                         homeContainer,
                       ],
                     )))));
-  }
-
-  Padding buildTopPadding(double topPadding, Material field) {
-    return Padding(
-      padding: EdgeInsets.only(top: topPadding),
-      child: field,
-    );
   }
 }
