@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import '../routes.dart';
 
 class RegisterLocationScreen extends StatefulWidget {
   const RegisterLocationScreen({Key? key}) : super(key: key);
@@ -190,12 +190,25 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          leading: Image.asset("lib/resources/logoperfect.png",
-              height: mediaQuery.size.height / 4,
-              width: mediaQuery.size.width / 1.5),
+          leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRoutes.user_profile);
+            },
+            icon: Icon(Icons.chevron_left, size: mediaQuery.size.width / 8),
+          ),
+          centerTitle: true,
           title: Text(
             "Cadastro de Local",
+            style: GoogleFonts.anton(
+                fontSize: mediaQuery.size.width / 14, color: Colors.white),
           ),
+          actions: [
+            Image.asset(
+              "lib/resources/logoperfect.png",
+              height: mediaQuery.size.height / 10,
+              width: mediaQuery.size.width / 5,
+            ),
+          ],
           backgroundColor: Color(0xffFF8A00),
         ),
         backgroundColor: Colors.white,

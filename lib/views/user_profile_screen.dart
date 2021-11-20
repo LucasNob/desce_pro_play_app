@@ -9,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
 import '../routes.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -254,7 +253,9 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                 RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ))),
-        onPressed: () {});
+        onPressed: () {
+          Navigator.of(context).pushNamed(AppRoutes.register_location);
+        });
 
     final bodyContainer = Container(
       child: Column(
