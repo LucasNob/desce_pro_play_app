@@ -49,7 +49,7 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
 
         if (user!.emailVerified) {
           print("Logged as: " + user.email.toString());
-          Navigator.of(context).pushNamed(AppRoutes.user_profile);
+          Navigator.of(context).pushNamed(AppRoutes.list_location_profiles);
         } else
           Navigator.of(context).pushNamed(AppRoutes.email_verification);
       } on FirebaseAuthException catch (error) {
@@ -151,7 +151,9 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
         child: Text(
           "Cadastre-se",
           style: GoogleFonts.roboto(
-              fontSize: mediaQuery.size.width / 24, color: Colors.black, fontWeight: FontWeight.bold),
+              fontSize: mediaQuery.size.width / 24,
+              color: Colors.black,
+              fontWeight: FontWeight.bold),
         ));
 
     final toForgetPasswordScreenButton = MaterialButton(
@@ -163,7 +165,9 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
         child: Text(
           "Esqueci minha senha",
           style: GoogleFonts.roboto(
-              fontSize: mediaQuery.size.width / 24, color: Colors.black, fontWeight: FontWeight.bold),
+              fontSize: mediaQuery.size.width / 24,
+              color: Colors.black,
+              fontWeight: FontWeight.bold),
         ));
 
     final bottomContainer = Container(
