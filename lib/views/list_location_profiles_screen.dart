@@ -16,6 +16,29 @@ class ListLocationProfilesScreen extends StatefulWidget {
 
 class _ListLocationProfileScreenState
     extends State<ListLocationProfilesScreen> {
+  int contador = 0;
+  PageController _pageController = PageController(initialPage: 0);
+  final optionsbottom = [
+    BottomNavigationBarItem(
+        icon: Icon(
+          Icons.location_city,
+          color: Colors.black,
+        ),
+        title: Text(
+          "Locais",
+          style: GoogleFonts.anton(color: Colors.black),
+        )),
+    BottomNavigationBarItem(
+        icon: Icon(
+          Icons.location_history_rounded,
+          color: Colors.black,
+        ),
+        title: Text(
+          "Esportistas",
+          style: GoogleFonts.anton(color: Colors.black),
+        )),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -54,7 +77,22 @@ class _ListLocationProfileScreenState
         ),
         backgroundColor: Colors.white,
         body: PageView(
+          controller: _pageController,
+          onPageChanged: (newindex) {
+            setState(() {
+              contador = newindex;
+            });
+          },
           children: [ListLocationScreen(), ListProfilesScreen()],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: contador,
+          items: optionsbottom,
+          backgroundColor: Color(0xffFF8A00),
+          onTap: (index) {
+            _pageController.animateToPage(index,
+                duration: Duration(milliseconds: 500), curve: Curves.ease);
+          },
         ));
   }
 }
