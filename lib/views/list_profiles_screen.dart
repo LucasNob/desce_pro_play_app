@@ -10,10 +10,12 @@ class ListProfilesScreen extends StatefulWidget {
 }
 
 class _ListProfilesScreenState extends State<ListProfilesScreen> {
+  double valueDistance = 5;
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final buttonFontSize = mediaQuery.size.width / 14;
+    final sliderFontSize = mediaQuery.size.width / 20;
     final _formKey = GlobalKey<FormState>();
 
     final logo = Material(
@@ -24,6 +26,42 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
         width: mediaQuery.size.width / 5,
       ),
     );
+
+    Widget buildSideLabel(double value) => Container(
+          child: Text(
+            value.round().toString() + ' KM',
+            style: GoogleFonts.roboto(
+                fontSize: sliderFontSize,
+                color: Colors.black,
+                fontWeight: FontWeight.bold),
+          ),
+        );
+
+    Widget buildSliderSideLabel() {
+      final double min = 1;
+      final double max = 90;
+
+      return Container(
+        margin: EdgeInsets.symmetric(horizontal: 2),
+        child: Row(
+          children: [
+            buildSideLabel(min),
+            Expanded(
+              child: Slider(
+                value: valueDistance,
+                min: min,
+                max: max,
+                activeColor: Color(0xffFF8A00),
+                label: valueDistance.round().toString(),
+                onChanged: (newValue) =>
+                    {setState(() => valueDistance = newValue)},
+              ),
+            ),
+            buildSideLabel(max),
+          ],
+        ),
+      );
+    }
 
     Widget profilesbutton(String locationName) {
       return ElevatedButton(
@@ -60,6 +98,7 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
     Widget registerContainer() {
       return Column(
         children: [
+          buildTopPadding(10, (buildSliderSideLabel())),
           buildTopPadding(20, (profilesbutton("Esportista 1"))),
           buildTopPadding(20, (profilesbutton("Esportista 2"))),
           buildTopPadding(20, (profilesbutton("Esportista 3"))),
@@ -77,8 +116,8 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
             key: _formKey,
             child: SingleChildScrollView(
                 padding: EdgeInsets.only(
-                    top: mediaQuery.size.height / 12,
-                    bottom: mediaQuery.size.height / 12),
+                    top: mediaQuery.size.height / 30,
+                    bottom: mediaQuery.size.height / 30),
                 child: registerContainer())));
   }
 
