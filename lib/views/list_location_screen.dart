@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:location/location.dart';
 
 class ListLocationScreen extends StatefulWidget {
   const ListLocationScreen({Key? key}) : super(key: key);
@@ -11,6 +12,26 @@ class ListLocationScreen extends StatefulWidget {
 
 class _ListLocationScreenState extends State<ListLocationScreen> {
   double valueDistance = 5;
+  var location = new Location();
+  var currentLocation;
+
+  void checkService() async {
+    var serviceEnabled = await location.serviceEnabled();
+
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+    } else {
+      currentLocation = await location.getLocation();
+      print(currentLocation);
+    }
+  }
+
+  Padding buildTopPadding(double topPadding, Widget field) {
+    return Padding(
+      padding: EdgeInsets.only(top: topPadding),
+      child: field,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +39,8 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     final buttonFontSize = mediaQuery.size.width / 14;
     final sliderFontSize = mediaQuery.size.width / 20;
     final _formKey = GlobalKey<FormState>();
+
+    checkService();
 
     final logo = Material(
       color: Colors.transparent,
@@ -111,21 +134,16 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
       );
     }
 
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                    top: mediaQuery.size.height / 30,
-                    bottom: mediaQuery.size.height / 30),
-                child: registerContainer())));
-  }
-
-  Padding buildTopPadding(double topPadding, Widget field) {
-    return Padding(
-      padding: EdgeInsets.only(top: topPadding),
-      child: field,
-    );
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+            backgroundColor: Colors.white,
+            body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                    padding: EdgeInsets.only(
+                        top: mediaQuery.size.height / 30,
+                        bottom: mediaQuery.size.height / 30),
+                    child: registerContainer()))));
   }
 }

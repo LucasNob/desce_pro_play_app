@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:location/location.dart';
 
 import '../routes.dart';
 
@@ -14,6 +15,18 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
+  var location = new Location();
+
+  void checkPermission() async {
+    var permissionGranted = await location.hasPermission();
+
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+    } else if (permissionGranted != PermissionStatus.granted) {
+      print("Permission not granted.");
+    }
+  }
 
   Padding buildTopPadding(double topPadding, Material field) {
     return Padding(
@@ -28,6 +41,8 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
     final fieldFontSize = mediaQuery.size.width / 24;
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
+
+    checkPermission();
 
     void _showErrorSnack(String error) {
       ScaffoldMessenger.of(context).showSnackBar(

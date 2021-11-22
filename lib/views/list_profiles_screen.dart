@@ -11,6 +11,14 @@ class ListProfilesScreen extends StatefulWidget {
 
 class _ListProfilesScreenState extends State<ListProfilesScreen> {
   double valueDistance = 5;
+
+  Padding buildTopPadding(double topPadding, Widget field) {
+    return Padding(
+      padding: EdgeInsets.only(top: topPadding),
+      child: field,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -110,21 +118,16 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
       );
     }
 
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                    top: mediaQuery.size.height / 30,
-                    bottom: mediaQuery.size.height / 30),
-                child: registerContainer())));
-  }
-
-  Padding buildTopPadding(double topPadding, Widget field) {
-    return Padding(
-      padding: EdgeInsets.only(top: topPadding),
-      child: field,
-    );
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+            backgroundColor: Colors.white,
+            body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                    padding: EdgeInsets.only(
+                        top: mediaQuery.size.height / 30,
+                        bottom: mediaQuery.size.height / 30),
+                    child: registerContainer()))));
   }
 }
