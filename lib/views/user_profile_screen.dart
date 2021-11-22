@@ -276,7 +276,9 @@ class _UserProfileViewState extends State<UserProfileScreen> {
         backgroundColor: Color(0xffFF8A00),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, AppRoutes.list_location_profiles);
+          },
           icon: Icon(Icons.chevron_left, size: mediaQuery.size.width / 10),
         ),
         title: Text(

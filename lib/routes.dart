@@ -1,6 +1,9 @@
 import 'package:desce_pro_play_app/views/email_verification_screen.dart';
 import 'package:desce_pro_play_app/views/forget_password_email_screen.dart';
 import 'package:desce_pro_play_app/views/home_login_screen.dart';
+import 'package:desce_pro_play_app/views/list_location_profiles_screen.dart';
+import 'package:desce_pro_play_app/views/list_location_screen.dart';
+import 'package:desce_pro_play_app/views/list_profiles_screen.dart';
 import 'package:desce_pro_play_app/views/register_location_screen.dart';
 import 'package:desce_pro_play_app/views/register_screen.dart';
 import 'package:desce_pro_play_app/views/register_sports_screen.dart';
@@ -20,6 +23,9 @@ class AppRoutes {
   static const String user_profile = '/user_profile';
   static const String other_user_profile = '/other_user_profile';
   static const String email_verification = '/email_verification';
+  static const String list_location_profiles = '/list_location_profiles';
+  static const String list_location = '/list_location';
+  static const String list_profiles = '/list_profiles';
 
   static Map<String, WidgetBuilder> define() {
     return {
@@ -31,6 +37,9 @@ class AppRoutes {
       user_profile: (context) => UserProfileScreen(),
       other_user_profile: (context) => OtherUserProfileScreen(),
       email_verification: (context) => EmailVerificationScreen(),
+      list_location_profiles: (context) => ListLocationProfilesScreen(),
+      list_location: (context) => ListLocationScreen(),
+      list_profiles: (context) => ListProfilesScreen(),
     };
   }
 }

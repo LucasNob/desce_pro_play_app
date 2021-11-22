@@ -70,9 +70,9 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     final logo = Material(
       color: Colors.transparent,
       child: Image.asset(
-        "lib/resources/logo.png",
-        height: mediaQuery.size.height / 4,
-        width: mediaQuery.size.width / 1.5,
+        "lib/resources/logoperfect.png",
+        height: mediaQuery.size.height / 10,
+        width: mediaQuery.size.width / 5,
       ),
     );
 
@@ -202,13 +202,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
             style: GoogleFonts.anton(
                 fontSize: mediaQuery.size.width / 14, color: Colors.white),
           ),
-          actions: [
-            Image.asset(
-              "lib/resources/logoperfect.png",
-              height: mediaQuery.size.height / 10,
-              width: mediaQuery.size.width / 5,
-            ),
-          ],
+          actions: [logo],
           backgroundColor: Color(0xffFF8A00),
         ),
         backgroundColor: Colors.white,
