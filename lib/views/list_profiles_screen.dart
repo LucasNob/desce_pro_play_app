@@ -35,42 +35,6 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
       ),
     );
 
-    Widget buildSideLabel(double value) => Container(
-          child: Text(
-            value.round().toString() + ' KM',
-            style: GoogleFonts.roboto(
-                fontSize: sliderFontSize,
-                color: Colors.black,
-                fontWeight: FontWeight.bold),
-          ),
-        );
-
-    Widget buildSliderSideLabel() {
-      final double min = 1;
-      final double max = 90;
-
-      return Container(
-        margin: EdgeInsets.symmetric(horizontal: 2),
-        child: Row(
-          children: [
-            buildSideLabel(min),
-            Expanded(
-              child: Slider(
-                value: valueDistance,
-                min: min,
-                max: max,
-                activeColor: Color(0xffFF8A00),
-                label: valueDistance.round().toString(),
-                onChanged: (newValue) =>
-                    {setState(() => valueDistance = newValue)},
-              ),
-            ),
-            buildSideLabel(max),
-          ],
-        ),
-      );
-    }
-
     Widget profilesbutton(String locationName) {
       return ElevatedButton(
           child: Padding(
@@ -103,10 +67,9 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
           onPressed: () {});
     }
 
-    Widget registerContainer() {
+    Widget profilesContainer() {
       return Column(
         children: [
-          buildTopPadding(10, (buildSliderSideLabel())),
           buildTopPadding(20, (profilesbutton("Esportista 1"))),
           buildTopPadding(20, (profilesbutton("Esportista 2"))),
           buildTopPadding(20, (profilesbutton("Esportista 3"))),
@@ -128,6 +91,6 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
                     padding: EdgeInsets.only(
                         top: mediaQuery.size.height / 30,
                         bottom: mediaQuery.size.height / 30),
-                    child: registerContainer()))));
+                    child: profilesContainer()))));
   }
 }
