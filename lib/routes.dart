@@ -4,12 +4,14 @@ import 'package:desce_pro_play_app/views/home_login_screen.dart';
 import 'package:desce_pro_play_app/views/list_location_profiles_screen.dart';
 import 'package:desce_pro_play_app/views/list_location_screen.dart';
 import 'package:desce_pro_play_app/views/list_profiles_screen.dart';
+import 'package:desce_pro_play_app/views/other_location_profile_screen.dart';
 import 'package:desce_pro_play_app/views/register_location_screen.dart';
 import 'package:desce_pro_play_app/views/register_screen.dart';
 import 'package:desce_pro_play_app/views/register_sports_screen.dart';
 import 'package:desce_pro_play_app/views/user_profile_screen.dart';
 import 'package:desce_pro_play_app/views/other_user_profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -26,6 +28,7 @@ class AppRoutes {
   static const String list_location_profiles = '/list_location_profiles';
   static const String list_location = '/list_location';
   static const String list_profiles = '/list_profiles';
+  static const String other_location_profile = '/other_location_profile';
 
   static Map<String, WidgetBuilder> define() {
     return {
@@ -40,6 +43,7 @@ class AppRoutes {
       list_location_profiles: (context) => ListLocationProfilesScreen(),
       list_location: (context) => ListLocationScreen(),
       list_profiles: (context) => ListProfilesScreen(),
+      other_location_profile: (context) => OtherLocationProfileScreen()
     };
   }
 }
