@@ -12,11 +12,13 @@ class ListLocationScreen extends StatefulWidget {
 
 class _ListLocationScreenState extends State<ListLocationScreen> {
   double valueDistance = 5;
+
   var location = new Location();
+  var serviceEnabled;
   var currentLocation;
 
   void checkService() async {
-    var serviceEnabled = await location.serviceEnabled();
+    serviceEnabled = await location.serviceEnabled();
 
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
@@ -40,7 +42,9 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     final sliderFontSize = mediaQuery.size.width / 20;
     final _formKey = GlobalKey<FormState>();
 
-    checkService();
+    if (serviceEnabled == null) {
+      checkService();
+    }
 
     final logo = Material(
       color: Colors.transparent,
@@ -61,29 +65,35 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
           ),
         );
 
-    Widget buildSliderSideLabel() {
+    Widget buildSlider() {
       final double min = 1;
-      final double max = 90;
+      final double max = 25;
 
       return Container(
         margin: EdgeInsets.symmetric(horizontal: 2),
-        child: Row(
-          children: [
-            buildSideLabel(min),
-            Expanded(
-              child: Slider(
-                value: valueDistance,
-                min: min,
-                max: max,
-                activeColor: Color(0xffFF8A00),
-                label: valueDistance.round().toString(),
-                onChanged: (newValue) =>
-                    {setState(() => valueDistance = newValue)},
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(valueDistance.ceil().toString() + ' KM',
+              style: GoogleFonts.anton(
+                  fontSize: sliderFontSize, color: Colors.black)),
+          Row(
+            children: [
+              buildSideLabel(min),
+              Expanded(
+                child: Slider(
+                  value: valueDistance,
+                  min: min,
+                  max: max,
+                  divisions: 5,
+                  activeColor: Color(0xffFF8A00),
+                  label: valueDistance.round().toString(),
+                  onChanged: (double newValue) =>
+                      {setState(() => valueDistance = newValue)},
+                ),
               ),
-            ),
-            buildSideLabel(max),
-          ],
-        ),
+              buildSideLabel(max),
+            ],
+          )
+        ]),
       );
     }
 
@@ -120,17 +130,20 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     }
 
     Widget registerContainer() {
-      return Column(
-        children: [
-          buildTopPadding(10, (buildSliderSideLabel())),
-          buildTopPadding(20, (locationsbutton("Local 1"))),
-          buildTopPadding(20, (locationsbutton("Local 2"))),
-          buildTopPadding(20, (locationsbutton("Local 3"))),
-          buildTopPadding(20, (locationsbutton("Local 4"))),
-          buildTopPadding(20, (locationsbutton("Local 5"))),
-          buildTopPadding(20, (locationsbutton("Local 6"))),
-          buildTopPadding(20, (locationsbutton("Local 7"))),
-        ],
+      return Container(
+        width: mediaQuery.size.width / 1.2,
+        child: Column(
+          children: [
+            buildTopPadding(10, (buildSlider())),
+            buildTopPadding(20, (locationsbutton("Local 1"))),
+            buildTopPadding(20, (locationsbutton("Local 2"))),
+            buildTopPadding(20, (locationsbutton("Local 3"))),
+            buildTopPadding(20, (locationsbutton("Local 4"))),
+            buildTopPadding(20, (locationsbutton("Local 5"))),
+            buildTopPadding(20, (locationsbutton("Local 6"))),
+            buildTopPadding(20, (locationsbutton("Local 7"))),
+          ],
+        ),
       );
     }
 
@@ -144,6 +157,9 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
                     padding: EdgeInsets.only(
                         top: mediaQuery.size.height / 30,
                         bottom: mediaQuery.size.height / 30),
-                    child: registerContainer()))));
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [registerContainer()],
+                    )))));
   }
 }
