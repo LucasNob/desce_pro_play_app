@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -47,7 +45,7 @@ class _EmailVerificationViewState extends State<EmailVerificationScreen> {
             ))),
         onPressed: () {
           Navigator.of(context)
-              .pushNamed(AppRoutes.home_login); //temp user profile
+              .pushReplacementNamed(AppRoutes.home_login); //temp user profile
         });
 
     final sportsContainer = Container(
@@ -96,39 +94,4 @@ class _EmailVerificationViewState extends State<EmailVerificationScreen> {
                       ],
                     )))));
   }
-}
-
-// Sport tile widget
-class SportCheckboxWidget extends StatefulWidget {
-  final SportsCheckBoxModel item;
-
-  const SportCheckboxWidget({Key? key, required this.item}) : super(key: key);
-
-  @override
-  _SportCheckboxWidgetState createState() => _SportCheckboxWidgetState();
-}
-
-class _SportCheckboxWidgetState extends State<SportCheckboxWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return CheckboxListTile(
-      title: Text(widget.item.name),
-      secondary: Icon(widget.item.icon),
-      value: widget.item.check,
-      onChanged: (bool? value) {
-        setState(() {
-          widget.item.check = value;
-        });
-      },
-    );
-  }
-}
-
-class SportsCheckBoxModel {
-  SportsCheckBoxModel(
-      {required this.name, required this.icon, this.check = false});
-
-  String name;
-  IconData icon;
-  bool? check;
 }

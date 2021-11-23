@@ -11,6 +11,7 @@ class HomeLoginScreen extends StatefulWidget {
 }
 
 class _HomeLoginViewState extends State<HomeLoginScreen> {
+
   final _formKey = GlobalKey<FormState>();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -44,12 +45,11 @@ class _HomeLoginViewState extends State<HomeLoginScreen> {
         User? user = (await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
-        ))
-            .user;
+        )).user;
 
         if (user!.emailVerified) {
           print("Logged as: " + user.email.toString());
-          Navigator.of(context).pushNamed(AppRoutes.list_location_profiles);
+          Navigator.of(context).pushReplacementNamed(AppRoutes.list_location_profiles);
         } else
           Navigator.of(context).pushNamed(AppRoutes.email_verification);
       } on FirebaseAuthException catch (error) {
