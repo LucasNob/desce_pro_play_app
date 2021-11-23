@@ -68,16 +68,19 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
     }
 
     Widget profilesContainer() {
-      return Column(
-        children: [
-          buildTopPadding(20, (profilesbutton("Esportista 1"))),
-          buildTopPadding(20, (profilesbutton("Esportista 2"))),
-          buildTopPadding(20, (profilesbutton("Esportista 3"))),
-          buildTopPadding(20, (profilesbutton("Esportista 4"))),
-          buildTopPadding(20, (profilesbutton("Esportista 5"))),
-          buildTopPadding(20, (profilesbutton("Esportista 6"))),
-          buildTopPadding(20, (profilesbutton("Esportista 7"))),
-        ],
+      return Container(
+        width: mediaQuery.size.width / 1.2,
+        child: Column(
+          children: [
+            buildTopPadding(20, (profilesbutton("Esportista 1"))),
+            buildTopPadding(20, (profilesbutton("Esportista 2"))),
+            buildTopPadding(20, (profilesbutton("Esportista 3"))),
+            buildTopPadding(20, (profilesbutton("Esportista 4"))),
+            buildTopPadding(20, (profilesbutton("Esportista 5"))),
+            buildTopPadding(20, (profilesbutton("Esportista 6"))),
+            buildTopPadding(20, (profilesbutton("Esportista 7"))),
+          ],
+        ),
       );
     }
 
@@ -91,6 +94,9 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
                     padding: EdgeInsets.only(
                         top: mediaQuery.size.height / 30,
                         bottom: mediaQuery.size.height / 30),
-                    child: profilesContainer()))));
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [profilesContainer()],
+                    )))));
   }
 }
