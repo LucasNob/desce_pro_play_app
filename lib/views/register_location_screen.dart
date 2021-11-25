@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 import '../routes.dart';
 
 class RegisterLocationScreen extends StatefulWidget {
@@ -45,18 +49,50 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     "Outro"
   ];
 
-  File? image;
+  File? _locationImage;
+  final picker = ImagePicker();
 
-  Future pickimage() async {
+  Future uploadImageToFirebase() async {
+    String fileName = basename(_locationImage!.path);
+
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference firebaseStorageRef = storage.ref().child('uploads/location/$fileName');
+    UploadTask uploadTask = firebaseStorageRef.putFile(_locationImage!);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    taskSnapshot.ref.getDownloadURL().then((value) => newLocationData(value));
+  }
+
+  Future pickImage() async {
     try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (image == null) return;
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-      final imagetemporary = File(image.path);
-      setState(() => this.image = imagetemporary);
+      setState(() {
+        _locationImage = File(pickedFile!.path);
+        //uploadImageToFirebase();
+      });
     } on PlatformException catch (e) {
-      print('Erro ao selecionar imagem');
+      print("Falha ao escolher foto: $e");
     }
+  }
+
+  void newLocationData(String imgURL) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String emailId = user!.email.toString();
+    //String emailId = _emailController.text;
+    CollectionReference userdata =
+    FirebaseFirestore.instance.collection('locationdata');
+    await userdata.doc(_nameController.text).set({//criação de id especifico ao local?
+      'name': _nameController.text,
+      'fee': _taxaController.text,
+      'adress': _enderecoController.text,
+      'cep': _cepController.text,
+      'sports': dropdownValueSports,
+      'court_type': dropdownValueQuadras,
+      'about': _sobreController.text,
+      'created_by': emailId,
+      'image_url': imgURL,
+      'users': []
+    });
   }
 
   @override
@@ -76,6 +112,13 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
       ),
     );
 
+    void _showErrorSnack(String error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+        ),
+      );
+    }
     Widget textField(
         TextEditingController controller, String nome, double width) {
       return Material(
@@ -113,11 +156,20 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     }
 
     Widget buttonImage() {
-      return IconButton(
-        icon: Icon(Icons.home),
-        onPressed: () => pickimage(),
-        iconSize: 80,
-        padding: EdgeInsets.zero,
+      return Material(
+          child: _locationImage != null
+            ?  Image.file(
+                _locationImage!,
+                width: mediaQuery.size.width / 2.5,
+                height: mediaQuery.size.height / 4.75,
+                fit: BoxFit.cover,
+              )
+            :IconButton(
+              icon: Icon(Icons.home),
+                onPressed: () => pickImage(),
+                iconSize: 80,
+                padding: EdgeInsets.zero,
+              )
       );
     }
 
@@ -131,6 +183,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
               width: mediaQuery.size.width / width,
               child: DropdownButton<String>(
                 value: option ? dropdownValueSports : dropdownValueQuadras,
+                isExpanded: true,
                 icon: const Icon(Icons.arrow_downward),
                 iconSize: 24,
                 elevation: 16,
@@ -154,6 +207,34 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
               ),
             ),
           ));
+    }
+    Widget completeButton(){
+      return ElevatedButton(
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                  mediaQuery.size.width / 10,
+                  mediaQuery.size.height / 150,
+                  mediaQuery.size.width / 10,
+                  mediaQuery.size.height / 150),
+              child: Text(
+                "continuar".toUpperCase(),
+                style: GoogleFonts.anton(
+                    fontSize: buttonFontSize, color: Colors.black),
+              )),
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ))),
+          onPressed: () {
+            if (_nameController.text.isEmpty)
+              _showErrorSnack("Nome de local invalido");
+            else {
+              uploadImageToFirebase();
+              Navigator.of(context).pop();
+            }
+          });
     }
 
     Widget registerContainer() {
@@ -184,6 +265,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
                 5, textField(_taxaController, "Taxa de utilização", 1.1)),
             visible: privado,
           ),
+          completeButton(),
         ],
       );
     }
