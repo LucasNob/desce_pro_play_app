@@ -26,16 +26,20 @@ class _UserProfileViewState extends State<UserProfileScreen> {
 
   File? _userImage;
   final picker = ImagePicker();
+  var imgURL;
 
   Future uploadImageToFirebase() async {
     String fileName = basename(_userImage!.path);
 
     FirebaseStorage storage = FirebaseStorage.instance;
-    Reference firebaseStorageRef = storage.ref().child('uploads/$fileName');
+    Reference firebaseStorageRef = storage.ref().child('user-images/$fileName');
     UploadTask uploadTask = firebaseStorageRef.putFile(_userImage!);
     TaskSnapshot taskSnapshot = await uploadTask;
-    taskSnapshot.ref.getDownloadURL().then((value) async =>
-    await userData.doc(currentUser!.email).update({'image_url': value})).then((value) => setState(() {}));
+    taskSnapshot.ref
+        .getDownloadURL()
+        .then((value) async =>
+            await userData.doc(currentUser!.email).update({'image_url': value}))
+        .then((value) => setState(() {}));
   }
 
   Future pickImage() async {
@@ -54,6 +58,26 @@ class _UserProfileViewState extends State<UserProfileScreen> {
   Text buildText(String text, fontSize, color) {
     return Text(text,
         style: GoogleFonts.anton(fontSize: fontSize, color: color));
+  }
+
+  ClipOval buildUserAvatar(var imageURL, width, height) {
+    return imgURL != null
+        ? ClipOval(
+            child: Image.network(
+              imgURL,
+              width: width,
+              height: height,
+              fit: BoxFit.cover,
+            ),
+          )
+        : ClipOval(
+            child: Image.asset(
+              "lib/resources/user_default_profile_image.png",
+              width: width,
+              height: height,
+              fit: BoxFit.fill,
+            ),
+          );
   }
 
   @override
@@ -84,9 +108,6 @@ class _UserProfileViewState extends State<UserProfileScreen> {
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data =
                 snapshot.data!.data() as Map<String, dynamic>;
-
-            final imgURL = data['image_url'];
-
             return Container(
               child: Row(
                 children: [
@@ -97,10 +118,10 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           buildText("Nome", labelFontSize, Colors.grey),
-                          buildText(
-                              '${data['first_name']}', valueFontSize, Colors.black),
-                          buildText(
-                              "${data['last_name']}", valueFontSize, Colors.black)
+                          buildText('${data['first_name']}', valueFontSize,
+                              Colors.black),
+                          buildText("${data['last_name']}", valueFontSize,
+                              Colors.black)
                         ],
                       ),
                       Padding(
@@ -109,13 +130,15 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildText("Nascimento", labelFontSize, Colors.grey),
+                              buildText(
+                                  "Nascimento", labelFontSize, Colors.grey),
                               buildText("${data['birth_date']}", valueFontSize,
                                   Colors.black)
                             ],
                           )),
                       Padding(
-                        padding: EdgeInsets.only(top: mediaQuery.size.height / 35),
+                        padding:
+                            EdgeInsets.only(top: mediaQuery.size.height / 35),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -126,47 +149,32 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(top: mediaQuery.size.height / 35),
+                        padding:
+                            EdgeInsets.only(top: mediaQuery.size.height / 35),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Esportes Favoritos",
                                 style: GoogleFonts.anton(
-                                    fontSize: labelFontSize, color: Colors.grey)),
+                                    fontSize: labelFontSize,
+                                    color: Colors.grey)),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
-                  Material(
-                      child: imgURL != ''
-                          ? Column(
-                            children: [
-                              ClipOval (
-                              child:Image.network(
-                                  imgURL,
-                                  width: mediaQuery.size.width / 2.5,
-                                  height: mediaQuery.size.height / 4.75,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              openGallery,
-                            ],
-                          )
-                          : Column(
-                            children: [
-                              ClipOval(
-                                child: Image.asset(
-                                      "lib/resources/user_default_profile_image.png",
-                                      width: mediaQuery.size.width / 2.5,
-                                      height: mediaQuery.size.height / 4.75,
-                                      fit: BoxFit.fill,
-                                ),
-                              ),
-                              openGallery,
-                            ],
-                          )
-                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Material(
+                        child: buildUserAvatar(
+                            data['image_url'],
+                            mediaQuery.size.width / 2.5,
+                            mediaQuery.size.height / 4.75),
+                      ),
+                      openGallery
+                    ],
+                  )
                 ],
               ),
             );
@@ -177,15 +185,11 @@ class _UserProfileViewState extends State<UserProfileScreen> {
     final informationsContainer = Container(
       width: mediaQuery.size.width / 1.2,
       height: mediaQuery.size.height / 2.3,
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Padding(
-          padding: EdgeInsets.only(right: mediaQuery.size.width / 14),
-          child: loadProfile,
-        ),
-      ]),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.center, children: [loadProfile]),
     );
 
-    Widget toLocationButton (name) {
+    Widget toLocationButton(name) {
       return ElevatedButton(
           child: Padding(
               padding: EdgeInsets.fromLTRB(
@@ -212,8 +216,8 @@ class _UserProfileViewState extends State<UserProfileScreen> {
               backgroundColor: MaterialStateProperty.all(Color(0xffC4C4C4)),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ))),
+                borderRadius: BorderRadius.circular(10),
+              ))),
           onPressed: () {
             Navigator.push(
               context,
@@ -229,23 +233,24 @@ class _UserProfileViewState extends State<UserProfileScreen> {
     final locationsContainer = Container(
       width: mediaQuery.size.width / 1.2,
       child: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('locationdata').snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return Column(
-            children: snapshot.data!.docs.map((documents){
-              return Padding(
-                padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
-                child: toLocationButton(documents['name']),
+          stream:
+              FirebaseFirestore.instance.collection('locationdata').snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
               );
-            }).toList(),
-          );
-        }
-      ),
+            }
+            return Column(
+              children: snapshot.data!.docs.map((documents) {
+                return Padding(
+                  padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
+                  child: toLocationButton(documents['name']),
+                );
+              }).toList(),
+            );
+          }),
     );
 
     final newLocationButton = ElevatedButton(
@@ -274,12 +279,12 @@ class _UserProfileViewState extends State<UserProfileScreen> {
       child: Column(
         children: <Widget>[
           informationsContainer,
-          locationsContainer,
           Padding(
             padding: EdgeInsets.only(
                 top: topAndBottomPadding, bottom: topAndBottomPadding),
             child: newLocationButton,
-          )
+          ),
+          locationsContainer
         ],
       ),
     );
