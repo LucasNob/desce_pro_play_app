@@ -56,7 +56,8 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     String fileName = basename(_locationImage!.path);
 
     FirebaseStorage storage = FirebaseStorage.instance;
-    Reference firebaseStorageRef = storage.ref().child('uploads/location/$fileName');
+    Reference firebaseStorageRef =
+        storage.ref().child('location-images/$fileName');
     UploadTask uploadTask = firebaseStorageRef.putFile(_locationImage!);
     TaskSnapshot taskSnapshot = await uploadTask;
     taskSnapshot.ref.getDownloadURL().then((value) => newLocationData(value));
@@ -80,8 +81,9 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     String emailId = user!.email.toString();
     //String emailId = _emailController.text;
     CollectionReference userdata =
-    FirebaseFirestore.instance.collection('locationdata');
-    await userdata.doc(_nameController.text).set({//criação de id especifico ao local?
+        FirebaseFirestore.instance.collection('locationdata');
+    await userdata.doc(_nameController.text).set({
+      //criação de id especifico ao local?
       'name': _nameController.text,
       'fee': _taxaController.text,
       'adress': _enderecoController.text,
@@ -119,6 +121,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
         ),
       );
     }
+
     Widget textField(
         TextEditingController controller, String nome, double width) {
       return Material(
@@ -158,19 +161,18 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     Widget buttonImage() {
       return Material(
           child: _locationImage != null
-            ?  Image.file(
-                _locationImage!,
-                width: mediaQuery.size.width / 2.5,
-                height: mediaQuery.size.height / 4.75,
-                fit: BoxFit.cover,
-              )
-            :IconButton(
-              icon: Icon(Icons.home),
-                onPressed: () => pickImage(),
-                iconSize: 80,
-                padding: EdgeInsets.zero,
-              )
-      );
+              ? Image.file(
+                  _locationImage!,
+                  width: mediaQuery.size.width / 2.5,
+                  height: mediaQuery.size.height / 4.75,
+                  fit: BoxFit.cover,
+                )
+              : IconButton(
+                  icon: Icon(Icons.home),
+                  onPressed: () => pickImage(),
+                  iconSize: 80,
+                  padding: EdgeInsets.zero,
+                ));
     }
 
     Widget dropdownField(double width, List<String> list, bool option) {
@@ -208,7 +210,8 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
             ),
           ));
     }
-    Widget completeButton(){
+
+    Widget completeButton() {
       return ElevatedButton(
           child: Padding(
               padding: EdgeInsets.fromLTRB(
@@ -225,8 +228,8 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
               backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ))),
+                borderRadius: BorderRadius.circular(15),
+              ))),
           onPressed: () {
             if (_nameController.text.isEmpty)
               _showErrorSnack("Nome de local invalido");
