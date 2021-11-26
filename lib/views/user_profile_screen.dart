@@ -26,7 +26,6 @@ class _UserProfileViewState extends State<UserProfileScreen> {
 
   File? _userImage;
   final picker = ImagePicker();
-  var imgURL;
 
   Future uploadImageToFirebase() async {
     String fileName = basename(_userImage!.path);
@@ -60,11 +59,12 @@ class _UserProfileViewState extends State<UserProfileScreen> {
         style: GoogleFonts.anton(fontSize: fontSize, color: color));
   }
 
-  ClipOval buildUserAvatar(var imageURL, width, height) {
-    return imgURL != null
+  Material buildUserAvatar(var imageURL, width, height) {
+    return Material(
+        child:imageURL != null
         ? ClipOval(
             child: Image.network(
-              imgURL,
+              imageURL,
               width: width,
               height: height,
               fit: BoxFit.cover,
@@ -77,7 +77,8 @@ class _UserProfileViewState extends State<UserProfileScreen> {
               height: height,
               fit: BoxFit.fill,
             ),
-          );
+          )
+    );
   }
 
   @override
