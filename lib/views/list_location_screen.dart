@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:desce_pro_play_app/views/location_profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -64,7 +66,7 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
       );
     }
 
-    Widget locationsbutton(String locationName) {
+    Widget toLocationButton (name) {
       return ElevatedButton(
           child: Padding(
               padding: EdgeInsets.fromLTRB(
@@ -76,7 +78,7 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    locationName,
+                    name,
                     style: GoogleFonts.roboto(
                         fontSize: buttonFontSize,
                         color: Colors.black,
@@ -91,23 +93,36 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
               backgroundColor: MaterialStateProperty.all(Color(0xffC4C4C4)),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ))),
-          onPressed: () {});
+                    borderRadius: BorderRadius.circular(10),
+                  ))),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LocationProfileScreen(locationName: name),
+              ),
+            );
+          });
     }
 
     Widget registerContainer() {
-      return Column(
-        children: [
-          buildTopPadding(10, (buildSliderSideLabel())),
-          buildTopPadding(20, (locationsbutton("Local 1"))),
-          buildTopPadding(20, (locationsbutton("Local 2"))),
-          buildTopPadding(20, (locationsbutton("Local 3"))),
-          buildTopPadding(20, (locationsbutton("Local 4"))),
-          buildTopPadding(20, (locationsbutton("Local 5"))),
-          buildTopPadding(20, (locationsbutton("Local 6"))),
-          buildTopPadding(20, (locationsbutton("Local 7"))),
-        ],
+      return StreamBuilder(
+          stream: FirebaseFirestore.instance.collection('locationdata').snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return Column(
+              children: snapshot.data!.docs.map((documents){
+                return Padding(
+                  padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
+                  child: toLocationButton(documents['name']),
+                );
+              }).toList(),
+            );
+          }
       );
     }
 

@@ -52,6 +52,7 @@ class _RegisterViewState extends State<RegisterScreen> {
         'birth_date': _birthDateController.text,
         'phone_number': _phoneNumberController.text,
         'user_gender': _gender,
+        'image_url':'',
         'sports': []
       });
     }
