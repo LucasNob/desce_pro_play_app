@@ -22,7 +22,6 @@ class _RegisterViewState extends State<RegisterScreen> {
   TextEditingController _repasswordController = TextEditingController();
 
   String _gender = "Masculino";
-  String _errorMessage = "";
   int _radioId = 0;
 
   @override
@@ -41,12 +40,10 @@ class _RegisterViewState extends State<RegisterScreen> {
       );
     }
 
-    //uploads user data
     void newUserData() async {
-      User? user = FirebaseAuth.instance.currentUser;
-      String emailId = user!.email.toString();
-
-      //TODO: error handling document upload
+      //User? user = FirebaseAuth.instance.currentUser;
+      //String emailId = user!.email.toString();
+      String emailId = _emailController.text;
       CollectionReference userdata =
           FirebaseFirestore.instance.collection('userdata');
       await userdata.doc(emailId).set({
@@ -55,8 +52,9 @@ class _RegisterViewState extends State<RegisterScreen> {
         'birth_date': _birthDateController.text,
         'phone_number': _phoneNumberController.text,
         'user_gender': _gender,
+        'image_url':'',
         'sports': []
-      }); //.then((value) => print("Sucess")).catchError((error)=> print("error : $error"));
+      });
     }
 
     void newUser(String email, String password) async {
@@ -71,18 +69,7 @@ class _RegisterViewState extends State<RegisterScreen> {
         Navigator.of(context).pushNamed(AppRoutes.register_sports);
       } else
         _showErrorSnack(errorCode);
-      //_showError(errorCode);
     }
-
-    //Listen for user sign in status change on creation to upload data
-    FirebaseAuth.instance.userChanges().listen((User? user) {
-      if (user == null) {
-        user = null;
-      } else {
-        user = FirebaseAuth.instance.currentUser;
-        newUserData();
-      }
-    });
 
     final logo = Material(
       color: Colors.transparent,
@@ -337,8 +324,10 @@ class _RegisterViewState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(15),
             ))),
         onPressed: () {
-          if (_passwordController.text == _repasswordController.text)
+          if (_passwordController.text == _repasswordController.text) {
             newUser(_emailController.text, _passwordController.text);
+            newUserData();
+          }
           else
             _showErrorSnack("Senhas diferentes");
         });
@@ -394,34 +383,6 @@ class _RegisterViewState extends State<RegisterScreen> {
     return Padding(
       padding: EdgeInsets.only(top: topPadding),
       child: field,
-    );
-  }
-
-  Future<void> _showError(String errorCode) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(errorCode),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(errorCode),
-                Text('Continuar?'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Ok'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

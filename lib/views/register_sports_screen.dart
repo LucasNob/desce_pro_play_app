@@ -36,7 +36,6 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
           selection.add(sport.name);
         }
       });
-      print(selection);
       User? user = FirebaseAuth.instance.currentUser;
       String emailId = user!.email.toString();
 
@@ -45,6 +44,7 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
       await userdata.doc(emailId).update({'sports': selection});
 
       user.sendEmailVerification();
+      FirebaseAuth.instance.signOut();
     }
 
     final logo = Material(
@@ -89,7 +89,7 @@ class _RegisterSportsViewState extends State<RegisterSportsScreen> {
         onPressed: () {
           saveSports(sports);
           Navigator.of(context)
-              .pushNamed(AppRoutes.email_verification); //temp user profile
+              .pushReplacementNamed(AppRoutes.email_verification); //temp user profile
         });
 
     final sportsContainer = Container(
