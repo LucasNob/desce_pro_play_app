@@ -35,7 +35,6 @@ class AppRoutes {
   static const String other_location_profile = '/other_location_profile';
   static const String location_profile = '/location_profile';
 
-
   static Map<String, WidgetBuilder> define() {
     return {
       home_login: (context) => HomeLoginScreen(),
@@ -49,9 +48,10 @@ class AppRoutes {
       list_location_profiles: (context) => ListLocationProfilesScreen(),
       list_location: (context) => ListLocationScreen(),
       list_profiles: (context) => ListProfilesScreen(),
-      
-      other_location_profile: (context) => OtherLocationProfileScreen()
-      location_profile: (context) => LocationProfileScreen(locationName: '',),
+      other_location_profile: (context) => OtherLocationProfileScreen(),
+      location_profile: (context) => LocationProfileScreen(
+            locationName: '',
+          ),
     };
   }
 }
