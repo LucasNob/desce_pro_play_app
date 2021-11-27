@@ -30,7 +30,7 @@ class _LocationProfileViewState extends State<LocationProfileScreen> {
   List? users;
   String? user;
 
-  Text buildText(String text, fontSize, color) {
+  Text buildText(String text, double fontSize, Color color) {
     return Text(text,
         style: GoogleFonts.anton(fontSize: fontSize, color: color));
   }
@@ -44,9 +44,13 @@ class _LocationProfileViewState extends State<LocationProfileScreen> {
     });
   }
 
-  void addUser() async {
+  Future usersList() async {
     locationDoc = await locationDocRef!.get();
     users = locationDoc!.get("users");
+  }
+
+  void addUser() async {
+    await usersList();
     await getName();
 
     if (!users!.contains(user)) {
@@ -56,14 +60,26 @@ class _LocationProfileViewState extends State<LocationProfileScreen> {
   }
 
   void removeUser() async {
-    locationDoc = await locationDocRef!.get();
-    users = locationDoc!.get("users");
+    await usersList();
     await getName();
 
     if (users!.contains(user)) {
       users!.remove(user);
       locationDocRef!.update({'users': users});
     }
+  }
+
+  Container buildUserContainer(Widget child, double width, double height) {
+    return Container(
+        width: width,
+        height: height,
+        child: child,
+        decoration: BoxDecoration(
+            color: Colors.grey,
+            border: Border.all(
+              color: Colors.black,
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(10))));
   }
 
   @override
@@ -73,6 +89,8 @@ class _LocationProfileViewState extends State<LocationProfileScreen> {
     final valueFontSize = mediaQuery.size.width / 18;
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
+
+    usersList();
 
     final loadProfile = FutureBuilder<DocumentSnapshot>(
         future: locationdata.doc(widget.locationName).get(),
@@ -206,6 +224,27 @@ class _LocationProfileViewState extends State<LocationProfileScreen> {
           removeUser();
         });
 
+    Widget participatingUsers() {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          for (var user in users!)
+            Padding(
+                padding: EdgeInsets.only(top: topAndBottomPadding),
+                child: buildUserContainer(
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        buildText(user.toString().toUpperCase(), valueFontSize,
+                            Colors.white)
+                      ],
+                    ),
+                    mediaQuery.size.width / 1.5,
+                    mediaQuery.size.height / 15))
+        ],
+      );
+    }
+
     final bodyContainer = Container(
       child: Column(
         children: <Widget>[
@@ -218,10 +257,11 @@ class _LocationProfileViewState extends State<LocationProfileScreen> {
                 Padding(
                     padding: EdgeInsets.only(right: mediaQuery.size.width / 10),
                     child: participateButton),
-                exitButton
+                exitButton,
               ],
             ),
           ),
+          users != null ? participatingUsers() : Text("")
         ],
       ),
     );
