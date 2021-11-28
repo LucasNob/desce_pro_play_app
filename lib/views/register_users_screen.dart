@@ -40,6 +40,16 @@ class _RegisterViewState extends State<RegisterScreen> {
       );
     }
 
+    bool validateNumber(String value) {
+      String patttern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
+      RegExp regExp = new RegExp(patttern);
+      if (value.length == 0 || !regExp.hasMatch(value)) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
     void newUserData() async {
       //User? user = FirebaseAuth.instance.currentUser;
       //String emailId = user!.email.toString();
@@ -52,7 +62,7 @@ class _RegisterViewState extends State<RegisterScreen> {
         'birth_date': _birthDateController.text,
         'phone_number': _phoneNumberController.text,
         'user_gender': _gender,
-        'image_url':'',
+        'image_url': '',
         'sports': []
       });
     }
@@ -227,7 +237,7 @@ class _RegisterViewState extends State<RegisterScreen> {
           child: Container(
             width: mediaQuery.size.width / 1.4,
             child: TextFormField(
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.digitsOnly
               ],
@@ -324,12 +334,15 @@ class _RegisterViewState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(15),
             ))),
         onPressed: () {
-          if (_passwordController.text == _repasswordController.text) {
-            newUser(_emailController.text, _passwordController.text);
-            newUserData();
+          if (validateNumber(_phoneNumberController.text)) {
+            if (_passwordController.text == _repasswordController.text) {
+              newUser(_emailController.text, _passwordController.text);
+              newUserData();
+            } else
+              _showErrorSnack("Senhas diferentes");
+          } else {
+            _showErrorSnack("Formato de Telefone inválido");
           }
-          else
-            _showErrorSnack("Senhas diferentes");
         });
 
     final registerFields = Column(
