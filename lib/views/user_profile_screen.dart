@@ -61,24 +61,23 @@ class _UserProfileViewState extends State<UserProfileScreen> {
 
   Material buildUserAvatar(var imageURL, width, height) {
     return Material(
-        child:imageURL != null
-        ? ClipOval(
-            child: Image.network(
-              imageURL,
-              width: width,
-              height: height,
-              fit: BoxFit.cover,
-            ),
-          )
-        : ClipOval(
-            child: Image.asset(
-              "lib/resources/user_default_profile_image.png",
-              width: width,
-              height: height,
-              fit: BoxFit.fill,
-            ),
-          )
-    );
+        child: imageURL != null
+            ? ClipOval(
+                child: Image.network(
+                  imageURL,
+                  width: width,
+                  height: height,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : ClipOval(
+                child: Image.asset(
+                  "lib/resources/user_default_profile_image.png",
+                  width: width,
+                  height: height,
+                  fit: BoxFit.fill,
+                ),
+              ));
   }
 
   @override
@@ -290,40 +289,44 @@ class _UserProfileViewState extends State<UserProfileScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xffFF8A00),
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pushNamed(context, AppRoutes.list_location_profiles);
-          },
-          icon: Icon(Icons.chevron_left, size: mediaQuery.size.width / 10),
-        ),
-        title: Text(
-          "Meu Perfil",
-          style: GoogleFonts.anton(
-              fontSize: mediaQuery.size.width / 14, color: Colors.white),
-        ),
-        actions: [
-          IconButton(
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Color(0xffFF8A00),
+            centerTitle: true,
+            leading: IconButton(
               onPressed: () {
-                FirebaseAuth.instance.userChanges().listen((User? user) {
-                  user = null;
-                });
-                FirebaseAuth.instance.signOut();
-                Navigator.pushReplacementNamed(context, "/");
+                Navigator.pushNamed(context, AppRoutes.list_location_profiles);
               },
-              icon: Icon(Icons.exit_to_app, size: mediaQuery.size.width / 10))
-        ],
-      ),
-      body: SingleChildScrollView(
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Padding(
-          padding: EdgeInsets.only(top: topAndBottomPadding),
-          child: bodyContainer,
-        ),
-      ])),
-    );
+              icon: Icon(Icons.chevron_left, size: mediaQuery.size.width / 10),
+            ),
+            title: Text(
+              "Meu Perfil",
+              style: GoogleFonts.anton(
+                  fontSize: mediaQuery.size.width / 14, color: Colors.white),
+            ),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    FirebaseAuth.instance.userChanges().listen((User? user) {
+                      user = null;
+                    });
+                    FirebaseAuth.instance.signOut();
+                    Navigator.pushReplacementNamed(context, "/");
+                  },
+                  icon:
+                      Icon(Icons.exit_to_app, size: mediaQuery.size.width / 10))
+            ],
+          ),
+          body: SingleChildScrollView(
+              child:
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Padding(
+              padding: EdgeInsets.only(top: topAndBottomPadding),
+              child: bodyContainer,
+            ),
+          ])),
+        ));
   }
 }
