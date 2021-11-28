@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
@@ -79,9 +80,10 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
   void newLocationData(String imgURL) async {
     User? user = FirebaseAuth.instance.currentUser;
     String emailId = user!.email.toString();
-    //String emailId = _emailController.text;
-    CollectionReference userdata =
-        FirebaseFirestore.instance.collection('locationdata');
+    print(_enderecoController.text);
+    List<Location> locations = await locationFromAddress(_enderecoController.text);
+    print(_enderecoController.text);
+    CollectionReference userdata = FirebaseFirestore.instance.collection('locationdata');
     await userdata.doc(_nameController.text).set({
       //criação de id especifico ao local?
       'name': _nameController.text,
@@ -93,6 +95,8 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
       'about': _sobreController.text,
       'created_by': emailId,
       'image_url': imgURL,
+      'latitude': locations[0].latitude,
+      'longitude':locations[0].longitude,
       'users': []
     });
   }
@@ -231,8 +235,10 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
                 borderRadius: BorderRadius.circular(15),
               ))),
           onPressed: () {
-            if (_nameController.text.isEmpty)
-              _showErrorSnack("Nome de local invalido");
+            if (_nameController.text.isEmpty ||
+                _enderecoController.text.isEmpty ||
+                _locationImage == null)
+              _showErrorSnack("Dados invalidos");
             else {
               uploadImageToFirebase();
               Navigator.of(context).pop();

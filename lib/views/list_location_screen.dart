@@ -19,6 +19,7 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     final mediaQuery = MediaQuery.of(context);
     final buttonFontSize = mediaQuery.size.width / 14;
     final sliderFontSize = mediaQuery.size.width / 20;
+    final topAndBottomPadding = mediaQuery.size.height / 30;
     final _formKey = GlobalKey<FormState>();
 
     final logo = Material(
@@ -33,10 +34,10 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     Widget buildSideLabel(double value) => Container(
           child: Text(
             value.round().toString() + ' KM',
-            style: GoogleFonts.roboto(
-                fontSize: sliderFontSize,
-                color: Colors.black,
-                fontWeight: FontWeight.bold),
+            style: GoogleFonts.anton(
+              fontSize: sliderFontSize,
+              color: Colors.black,
+            ),
           ),
         );
 
@@ -66,7 +67,7 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
       );
     }
 
-    Widget toLocationButton (name) {
+    Widget toLocationButton(name) {
       return ElevatedButton(
           child: Padding(
               padding: EdgeInsets.fromLTRB(
@@ -79,10 +80,8 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
                 children: [
                   Text(
                     name,
-                    style: GoogleFonts.roboto(
-                        fontSize: buttonFontSize,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
+                    style: GoogleFonts.anton(
+                        fontSize: buttonFontSize, color: Colors.black),
                   ),
                   Icon(Icons.chevron_right_outlined,
                       size: mediaQuery.size.width / 10,
@@ -93,8 +92,8 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
               backgroundColor: MaterialStateProperty.all(Color(0xffC4C4C4)),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ))),
+                borderRadius: BorderRadius.circular(10),
+              ))),
           onPressed: () {
             Navigator.push(
               context,
@@ -105,24 +104,38 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
           });
     }
 
-    Widget registerContainer() {
-      return StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('locationdata').snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return Column(
-              children: snapshot.data!.docs.map((documents){
-                return Padding(
-                  padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
-                  child: toLocationButton(documents['name']),
-                );
-              }).toList(),
-            );
-          }
+    Widget locationsContainer() {
+      return Container(
+        width: mediaQuery.size.width / 1.2,
+        child: Column(
+          children: [
+            Text(valueDistance.ceil().toString() + " KM",
+                style: GoogleFonts.anton(
+                    fontSize: buttonFontSize, color: Colors.black)),
+            buildTopPadding(topAndBottomPadding, buildSliderSideLabel()),
+            StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('locationdata')
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  return Column(
+                    children: snapshot.data!.docs.map((documents) {
+                      return Padding(
+                        padding:
+                            EdgeInsets.only(top: mediaQuery.size.height / 50),
+                        child: toLocationButton(documents['name']),
+                      );
+                    }).toList(),
+                  );
+                })
+          ],
+        ),
       );
     }
 
@@ -134,7 +147,10 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
                 padding: EdgeInsets.only(
                     top: mediaQuery.size.height / 30,
                     bottom: mediaQuery.size.height / 30),
-                child: registerContainer())));
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [locationsContainer()],
+                ))));
   }
 
   Padding buildTopPadding(double topPadding, Widget field) {
