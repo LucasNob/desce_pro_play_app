@@ -108,74 +108,77 @@ class _UserProfileViewState extends State<UserProfileScreen> {
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data =
                 snapshot.data!.data() as Map<String, dynamic>;
-            return Container(
-              child: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          buildText("Nome", labelFontSize, Colors.grey),
-                          buildText('${data['first_name']}', valueFontSize,
-                              Colors.black),
-                          buildText("${data['last_name']}", valueFontSize,
-                              Colors.black)
-                        ],
-                      ),
-                      Padding(
+            return Padding(
+              padding: const EdgeInsets.all(1),
+              child: Container(
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildText("Nome", labelFontSize, Colors.grey),
+                            buildText('${data['first_name']}', valueFontSize,
+                                Colors.black),
+                            buildText("${data['last_name']}", valueFontSize,
+                                Colors.black)
+                          ],
+                        ),
+                        Padding(
+                            padding:
+                                EdgeInsets.only(top: mediaQuery.size.height / 35),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildText(
+                                    "Nascimento", labelFontSize, Colors.grey),
+                                buildText("${data['birth_date']}", valueFontSize,
+                                    Colors.black)
+                              ],
+                            )),
+                        Padding(
                           padding:
                               EdgeInsets.only(top: mediaQuery.size.height / 35),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildText(
-                                  "Nascimento", labelFontSize, Colors.grey),
-                              buildText("${data['birth_date']}", valueFontSize,
+                              buildText("Sexo", labelFontSize, Colors.grey),
+                              buildText("${data['user_gender']}", valueFontSize,
                                   Colors.black)
                             ],
-                          )),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(top: mediaQuery.size.height / 35),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildText("Sexo", labelFontSize, Colors.grey),
-                            buildText("${data['user_gender']}", valueFontSize,
-                                Colors.black)
-                          ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(top: mediaQuery.size.height / 35),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Esportes Favoritos",
-                                style: GoogleFonts.anton(
-                                    fontSize: labelFontSize,
-                                    color: Colors.grey)),
-                          ],
+                        Padding(
+                          padding:
+                              EdgeInsets.only(top: mediaQuery.size.height / 35, bottom: mediaQuery.size.height / 35, ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Esportes Favoritos",
+                                  style: GoogleFonts.anton(
+                                      fontSize: labelFontSize,
+                                      color: Colors.grey)),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Material(
-                        child: buildUserAvatar(
-                            data['image_url'],
-                            mediaQuery.size.width / 2.5,
-                            mediaQuery.size.height / 4.75),
-                      ),
-                      openGallery
-                    ],
-                  )
-                ],
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Material(
+                          child: buildUserAvatar(
+                              data['image_url'],
+                              mediaQuery.size.width / 2.5,
+                              mediaQuery.size.height / 4.75),
+                        ),
+                        openGallery
+                      ],
+                    )
+                  ],
+                ),
               ),
             );
           }
@@ -184,9 +187,12 @@ class _UserProfileViewState extends State<UserProfileScreen> {
 
     final informationsContainer = Container(
       width: mediaQuery.size.width / 1.2,
-      height: mediaQuery.size.height / 2.3,
+      height: mediaQuery.size.height / 2.0,
       child: Row(
-          mainAxisAlignment: MainAxisAlignment.center, children: [loadProfile]),
+          mainAxisAlignment: MainAxisAlignment.center, children: [Padding(
+            padding: const EdgeInsets.only(),
+            child: loadProfile,
+          )]),
     );
 
     Widget toLocationButton(name) {
