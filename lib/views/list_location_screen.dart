@@ -15,7 +15,7 @@ class ListLocationScreen extends StatefulWidget {
 
 class _ListLocationScreenState extends State<ListLocationScreen> {
   double valueDistance = 5;
-  Map<String,double> locationList = {};
+  Map<String, double> locationList = {};
 
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
@@ -40,30 +40,38 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     }
     return await Geolocator.getCurrentPosition();
   }
+
   _getLocationDistance() async {
-    Position userPosition =  await _determinePosition();
+    Position userPosition = await _determinePosition();
     double distance;
     locationList.clear();
-    print("User Latitude "+userPosition.latitude.toString()+", Latitude "+userPosition.latitude.toString());
+    print("User Latitude " +
+        userPosition.latitude.toString() +
+        ", Latitude " +
+        userPosition.latitude.toString());
 
     await FirebaseFirestore.instance
         .collection('locationdata')
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) async {
-        distance = Geolocator.distanceBetween(
-            doc['latitude'],
-            doc['longitude'],
-            userPosition.latitude,
-            userPosition.longitude);
+        distance = Geolocator.distanceBetween(doc['latitude'], doc['longitude'],
+            userPosition.latitude, userPosition.longitude);
 
         print("${doc['name']} " + distance.toString());
-        
-        if(distance <= valueDistance*1000) {
+
+        if (distance <= valueDistance * 1000) {
           locationList[doc['name']] = distance;
         }
       });
     });
+  }
+
+  Padding buildTopPadding(double topPadding, Widget field) {
+    return Padding(
+      padding: EdgeInsets.only(top: topPadding),
+      child: field,
+    );
   }
 
   @override
@@ -75,15 +83,6 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     final _formKey = GlobalKey<FormState>();
 
     _getLocationDistance();
-
-    final logo = Material(
-      color: Colors.transparent,
-      child: Image.asset(
-        "lib/resources/logoperfect.png",
-        height: mediaQuery.size.height / 10,
-        width: mediaQuery.size.width / 5,
-      ),
-    );
 
     Widget buildSideLabel(double value) => Container(
           child: Text(
@@ -121,48 +120,60 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
       );
     }
 
-    Widget toLocationButton(String name,double distance) {
-      return ElevatedButton(
-          child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                  mediaQuery.size.width / 22,
-                  mediaQuery.size.height / 155,
-                  mediaQuery.size.width / 22,
-                  mediaQuery.size.height / 155),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    name,
-                    style: GoogleFonts.anton(
-                        fontSize: buttonFontSize, color: Colors.black),
-                  ),
-                  Text(
-                    distance.ceil().toString()+" KM",
-                    style: GoogleFonts.anton(
-                        fontSize: buttonFontSize/2, color: Colors.black),
-                  ),
-                  Icon(Icons.chevron_right_outlined,
-                      size: mediaQuery.size.width / 10,
-                      color: Color(0xff565656))
-                ],
-              )),
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Color(0xffC4C4C4)),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ))),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LocationProfileScreen(locationName: name),
-              ),
-            );
-          });
-    }
+    Widget toLocationButton(String name, double distance) {
+      String localName = name.substring(0, 6).trim();
 
+      return Padding(
+        padding: EdgeInsets.only(top: topAndBottomPadding),
+        child: ElevatedButton(
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                    mediaQuery.size.width / 22,
+                    mediaQuery.size.height / 155,
+                    mediaQuery.size.width / 22,
+                    mediaQuery.size.height / 155),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          localName + " ...",
+                          style: GoogleFonts.anton(
+                              fontSize: buttonFontSize, color: Colors.black),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          (distance.ceil() / 1000).toString() + " KM",
+                          style: GoogleFonts.anton(
+                              fontSize: buttonFontSize / 2,
+                              color: Colors.black),
+                        )
+                      ],
+                    ),
+                    Icon(Icons.chevron_right_outlined,
+                        size: mediaQuery.size.width / 10,
+                        color: Color(0xff565656))
+                  ],
+                )),
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Color(0xffC4C4C4)),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ))),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      LocationProfileScreen(locationName: name),
+                ),
+              );
+            }),
+      );
+    }
 
     List<Widget> getLocationsList() {
       List<Widget> list = [];
@@ -173,9 +184,9 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     }
 
     Widget getLocations() => Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: getLocationsList(),
-    );
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: getLocationsList(),
+        );
 
     Widget locationsContainer() {
       return Container(
@@ -202,14 +213,9 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
                     bottom: mediaQuery.size.height / 30),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [locationsContainer(),],
+                  children: [
+                    locationsContainer(),
+                  ],
                 ))));
-  }
-
-  Padding buildTopPadding(double topPadding, Widget field) {
-    return Padding(
-      padding: EdgeInsets.only(top: topPadding),
-      child: field,
-    );
   }
 }
