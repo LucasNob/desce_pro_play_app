@@ -127,15 +127,15 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                           ],
                         ),
                         Padding(
-                            padding:
-                                EdgeInsets.only(top: mediaQuery.size.height / 35),
+                            padding: EdgeInsets.only(
+                                top: mediaQuery.size.height / 35),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 buildText(
                                     "Nascimento", labelFontSize, Colors.grey),
-                                buildText("${data['birth_date']}", valueFontSize,
-                                    Colors.black)
+                                buildText("${data['birth_date']}",
+                                    valueFontSize, Colors.black)
                               ],
                             )),
                         Padding(
@@ -151,8 +151,10 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                           ),
                         ),
                         Padding(
-                          padding:
-                              EdgeInsets.only(top: mediaQuery.size.height / 35, bottom: mediaQuery.size.height / 35, ),
+                          padding: EdgeInsets.only(
+                            top: mediaQuery.size.height / 35,
+                            bottom: mediaQuery.size.height / 35,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -188,14 +190,17 @@ class _UserProfileViewState extends State<UserProfileScreen> {
     final informationsContainer = Container(
       width: mediaQuery.size.width / 1.2,
       height: mediaQuery.size.height / 2.0,
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.center, children: [Padding(
-            padding: const EdgeInsets.only(),
-            child: loadProfile,
-          )]),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Padding(
+          padding: const EdgeInsets.only(),
+          child: loadProfile,
+        )
+      ]),
     );
 
-    Widget toLocationButton(name) {
+    Widget toLocationButton(String name) {
+      String localName = name.substring(0, 5).trim();
+
       return ElevatedButton(
           child: Padding(
               padding: EdgeInsets.fromLTRB(
@@ -207,7 +212,7 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    name,
+                    localName + " ...",
                     style: GoogleFonts.roboto(
                         fontSize: buttonFontSize,
                         color: Colors.black,
@@ -269,10 +274,10 @@ class _UserProfileViewState extends State<UserProfileScreen> {
             child: Text(
               "criar local".toUpperCase(),
               style: GoogleFonts.anton(
-                  fontSize: buttonFontSize, color: Colors.black),
+                  fontSize: buttonFontSize, color: Colors.white),
             )),
         style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Color(0xff5CD032)),
+            backgroundColor: MaterialStateProperty.all(Colors.lightGreen),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
