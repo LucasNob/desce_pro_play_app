@@ -58,7 +58,7 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
           onPressed: () {});
     }
 
-    Widget toUserProfileButton(name) {
+    Widget toUserProfileButton(name,email) {
       return ElevatedButton(
           child: Padding(
               padding: EdgeInsets.fromLTRB(
@@ -89,7 +89,7 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => OtherUserProfileScreen(userName: name),
+                builder: (context) => OtherUserProfileScreen(userEmail: email),
               ),
             );
           });
@@ -111,7 +111,7 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
                 children: snapshot.data!.docs.map((documents) {
                   return Padding(
                     padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
-                    child: toUserProfileButton(documents['first_name']),
+                    child: toUserProfileButton(documents['first_name'],documents.id),
                   );
                 }).toList(),
               );

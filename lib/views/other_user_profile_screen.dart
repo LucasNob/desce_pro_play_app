@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class OtherUserProfileScreen extends StatefulWidget {
-  const OtherUserProfileScreen({Key? key, required this.userName})
+  const OtherUserProfileScreen({Key? key, required this.userEmail})
       : super(key: key);
 
-  final String userName;
+  final String userEmail;
 
   @override
   _OtherUserProfileViewState createState() => _OtherUserProfileViewState();
@@ -56,7 +56,7 @@ class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
     final topAndBottomPadding = mediaQuery.size.height / 30;
 
     final loadProfile = FutureBuilder<DocumentSnapshot>(
-        future: userdata.doc(widget.userName).get(),
+        future: userdata.doc(widget.userEmail).get(),
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (snapshot.hasError) {
@@ -146,29 +146,6 @@ class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
           return Text("loading...");
         });
 
-    final userAvatar = Material(
-        child: _userImage != null
-            ? ClipOval(
-                child: Image.file(
-                  _userImage!,
-                  width: mediaQuery.size.width / 2.5,
-                  height: mediaQuery.size.height / 4.75,
-                  fit: BoxFit.cover,
-                ),
-              )
-            : ClipOval(
-                child: Image.asset(
-                  "lib/resources/user_default_profile_image.png",
-                  width: mediaQuery.size.width / 2.5,
-                  height: mediaQuery.size.height / 4.75,
-                  fit: BoxFit.cover,
-                ),
-              ));
-
-    final profileImage = Column(
-      children: [userAvatar],
-    );
-
     final informationsContainer = Container(
       width: mediaQuery.size.width / 1.2,
       height: mediaQuery.size.height / 2.3,
@@ -177,10 +154,7 @@ class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
           padding: EdgeInsets.only(right: mediaQuery.size.width / 14),
           child: loadProfile,
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [profileImage],
-        ),
+
       ]),
     );
 

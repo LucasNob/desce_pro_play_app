@@ -42,10 +42,8 @@ class AppRoutes {
       list_location_profiles: (context) => ListLocationProfilesScreen(),
       list_location: (context) => ListLocationScreen(),
       list_profiles: (context) => ListProfilesScreen(),
-      location_profile: (context) => LocationProfileScreen(
-            locationName: '',
-          ),
-      other_user_profile: (context) => OtherUserProfileScreen(userName: ''),
+      location_profile: (context) => LocationProfileScreen(locationName: ''),
+      other_user_profile: (context) => OtherUserProfileScreen(userEmail: ''),
     };
   }
 }
