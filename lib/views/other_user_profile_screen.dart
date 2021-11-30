@@ -1,21 +1,50 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:desce_pro_play_app/routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class OtherUserProfileScreen extends StatefulWidget {
-  const OtherUserProfileScreen({Key? key}) : super(key: key);
+  const OtherUserProfileScreen({Key? key, required this.userName})
+      : super(key: key);
+
+  final String userName;
 
   @override
   _OtherUserProfileViewState createState() => _OtherUserProfileViewState();
 }
 
 class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
+  CollectionReference userdata =
+      FirebaseFirestore.instance.collection('userdata');
+
   File? _userImage;
 
   Text buildText(String text, fontSize, color) {
     return Text(text,
         style: GoogleFonts.anton(fontSize: fontSize, color: color));
+  }
+
+  Material buildUserAvatar(var imageURL, width, height) {
+    return Material(
+        child: imageURL != null
+            ? ClipOval(
+                child: Image.network(
+                  imageURL,
+                  width: width,
+                  height: height,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : ClipOval(
+                child: Image.asset(
+                  "lib/resources/user_default_profile_image.png",
+                  width: width,
+                  height: height,
+                  fit: BoxFit.fill,
+                ),
+              ));
   }
 
   @override
@@ -26,51 +55,96 @@ class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
 
-    final loadProfile = Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildText("Nome", labelFontSize, Colors.grey),
-              buildText('Ana', valueFontSize, Colors.black),
-              buildText('Nascimento', valueFontSize, Colors.black)
-            ],
-          ),
-          Padding(
-              padding: EdgeInsets.only(top: mediaQuery.size.height / 35),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildText("Nascimento", labelFontSize, Colors.grey),
-                  buildText("01/01/2000", valueFontSize, Colors.black)
-                ],
-              )),
-          Padding(
-            padding: EdgeInsets.only(top: mediaQuery.size.height / 35),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildText("Sexo", labelFontSize, Colors.grey),
-                buildText("Feminino", valueFontSize, Colors.black)
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: mediaQuery.size.height / 35),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Esportes Favoritos",
-                    style: GoogleFonts.anton(
-                        fontSize: labelFontSize, color: Colors.grey)),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+    final loadProfile = FutureBuilder<DocumentSnapshot>(
+        future: userdata.doc(widget.userName).get(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text("Erro ao Carregar");
+          }
+          if (snapshot.hasData && !snapshot.data!.exists) {
+            return Text("Dados de usuario inexistente");
+          }
+          if (snapshot.connectionState == ConnectionState.done) {
+            Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;
+            return Padding(
+              padding: const EdgeInsets.all(1),
+              child: Container(
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildText("Nome", labelFontSize, Colors.grey),
+                            buildText('${data['first_name']}', valueFontSize,
+                                Colors.black),
+                            buildText("${data['last_name']}", valueFontSize,
+                                Colors.black)
+                          ],
+                        ),
+                        Padding(
+                            padding: EdgeInsets.only(
+                                top: mediaQuery.size.height / 35),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildText(
+                                    "Nascimento", labelFontSize, Colors.grey),
+                                buildText("${data['birth_date']}",
+                                    valueFontSize, Colors.black)
+                              ],
+                            )),
+                        Padding(
+                          padding:
+                              EdgeInsets.only(top: mediaQuery.size.height / 35),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildText("Sexo", labelFontSize, Colors.grey),
+                              buildText("${data['user_gender']}", valueFontSize,
+                                  Colors.black)
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: mediaQuery.size.height / 35,
+                            bottom: mediaQuery.size.height / 35,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Esportes Favoritos",
+                                  style: GoogleFonts.anton(
+                                      fontSize: labelFontSize,
+                                      color: Colors.grey)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Material(
+                          child: buildUserAvatar(
+                              data['image_url'],
+                              mediaQuery.size.width / 2.5,
+                              mediaQuery.size.height / 4.75),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            );
+          }
+          return Text("loading...");
+        });
 
     final userAvatar = Material(
         child: _userImage != null
@@ -189,7 +263,9 @@ class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
         backgroundColor: Color(0xffFF8A00),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
           icon: Icon(Icons.chevron_left, size: mediaQuery.size.width / 10),
         ),
         title: Text(
