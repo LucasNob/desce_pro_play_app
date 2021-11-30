@@ -98,7 +98,6 @@ class _LocationProfileViewState extends State<LocationProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final mediaQuery = MediaQuery.of(context);
 
     final buttonWidth = mediaQuery.size.width / 20;
@@ -109,6 +108,14 @@ class _LocationProfileViewState extends State<LocationProfileScreen> {
     final buttonFontSize = mediaQuery.size.width / 14;
 
     final topAndBottomPadding = mediaQuery.size.height / 30;
+
+    if (users == null) {
+      Future.delayed(const Duration(milliseconds: 2000), () {
+        setState(() {
+          usersList();
+        });
+      });
+    }
 
     Widget informationsContainer(
             name, address, cep, contact, tax, sports, courtType, about) =>
