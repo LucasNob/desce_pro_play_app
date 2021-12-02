@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:desce_pro_play_app/views/other_user_profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -56,6 +58,65 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
           onPressed: () {});
     }
 
+    Widget toUserProfileButton(name,email) {
+      return ElevatedButton(
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                  mediaQuery.size.width / 22,
+                  mediaQuery.size.height / 155,
+                  mediaQuery.size.width / 22,
+                  mediaQuery.size.height / 155),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    name,
+                    style: GoogleFonts.anton(
+                        fontSize: buttonFontSize, color: Colors.black),
+                  ),
+                  Icon(Icons.chevron_right_outlined,
+                      size: mediaQuery.size.width / 10,
+                      color: Color(0xff565656))
+                ],
+              )),
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Color(0xffC4C4C4)),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ))),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtherUserProfileScreen(userEmail: email),
+              ),
+            );
+          });
+    }
+
+    Widget profilesContainer() => Container(
+        width: mediaQuery.size.width / 1.2,
+        child: StreamBuilder(
+            stream:
+                FirebaseFirestore.instance.collection('userdata').snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return Column(
+                children: snapshot.data!.docs.map((documents) {
+                  return Padding(
+                    padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
+                    child: toUserProfileButton(documents['first_name'],documents.id),
+                  );
+                }).toList(),
+              );
+            }));
+
     Widget registerContainer() {
       return Container(
         width: mediaQuery.size.width / 1.2,
@@ -90,7 +151,7 @@ class _ListProfilesScreenState extends State<ListProfilesScreen> {
                     bottom: mediaQuery.size.height / 30),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [registerContainer()],
+                  children: [profilesContainer()],
                 ))));
   }
 }

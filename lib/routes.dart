@@ -38,14 +38,12 @@ class AppRoutes {
       forget_password_email: (context) => ForgetPasswordEmailScreen(),
       register_location: (context) => RegisterLocationScreen(),
       user_profile: (context) => UserProfileScreen(),
-      other_user_profile: (context) => OtherUserProfileScreen(),
       email_verification: (context) => EmailVerificationScreen(),
       list_location_profiles: (context) => ListLocationProfilesScreen(),
       list_location: (context) => ListLocationScreen(),
       list_profiles: (context) => ListProfilesScreen(),
-      location_profile: (context) => LocationProfileScreen(
-            locationName: '',
-          ),
+      location_profile: (context) => LocationProfileScreen(locationName: ''),
+      other_user_profile: (context) => OtherUserProfileScreen(userEmail: ''),
     };
   }
 }
