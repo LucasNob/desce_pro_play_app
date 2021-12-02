@@ -94,6 +94,34 @@ class _UserProfileViewState extends State<UserProfileScreen> {
         pickImage();
       },
     );
+    List sportsRow(List sports){
+      List s = [];
+      for(var i = 0;i<sports.length;i++)
+        switch(sports[i]) {
+          case('Futebol'):
+            s.add(Icons.sports_soccer);
+            break;
+          case('Skate'):
+            s.add(Icons.skateboarding);
+            break;
+          case('Basquete'):
+            s.add(Icons.sports_basketball);
+            break;
+          case('Football'):
+            s.add(Icons.sports_football);
+            break;
+          case('Vôlei'):
+            s.add(Icons.sports_volleyball);
+            break;
+          case('Tênis'):
+            s.add(Icons.sports_tennis);
+            break;
+          case('Outro'):
+            s.add(Icons.sports);
+            break;
+        }
+      return s;
+    }
 
     final loadProfile = FutureBuilder<DocumentSnapshot>(
         future: userData.doc(currentUser!.email).get(),
@@ -162,6 +190,11 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                                   style: GoogleFonts.anton(
                                       fontSize: labelFontSize,
                                       color: Colors.grey)),
+                              Row(children:<Widget>[
+                                    for(var icon in sportsRow(data['sports']))
+                                          Icon(icon)
+                                  ]
+                              ),
                             ],
                           ),
                         ),
@@ -176,7 +209,7 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                               mediaQuery.size.width / 2.5,
                               mediaQuery.size.height / 4.75),
                         ),
-                        openGallery
+                        openGallery,
                       ],
                     )
                   ],
