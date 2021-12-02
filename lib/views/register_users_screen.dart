@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:email_validator/email_validator.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -44,10 +45,51 @@ class _RegisterViewState extends State<RegisterScreen> {
       String patttern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
       RegExp regExp = new RegExp(patttern);
       if (value.length == 0 || !regExp.hasMatch(value)) {
-        return false;
-      } else {
         return true;
+      } else {
+        return false;
       }
+    }
+
+    bool validateSenhasDiferentes() {
+      if (_passwordController.text != _repasswordController.text)
+        return true;
+      else
+        return false;
+    }
+
+    bool validaCamposVazios() {
+      if (_firstNameController.text.isEmpty ||
+          _lastNameController.text.isEmpty ||
+          _birthDateController.text.isEmpty ||
+          _phoneNumberController.text.isEmpty ||
+          _emailController.text.isEmpty ||
+          _passwordController.text.isEmpty ||
+          _repasswordController.text.isEmpty)
+        return true;
+      else
+        return false;
+    }
+
+    bool validaCamposEspacos() {
+      if (_firstNameController.text.trim() == "" ||
+          _lastNameController.text.trim() == "" ||
+          _birthDateController.text.trim() == "" ||
+          _phoneNumberController.text.trim() == "" ||
+          _emailController.text.trim() == "" ||
+          _passwordController.text.trim() == "" ||
+          _repasswordController.text.trim() == "")
+        return true;
+      else
+        return false;
+    }
+
+    bool validaEmail() {
+      bool _isValid = EmailValidator.validate(_emailController.text);
+      if (_isValid)
+        return false;
+      else
+        return true;
     }
 
     void newUserData() async {
@@ -334,14 +376,19 @@ class _RegisterViewState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(15),
             ))),
         onPressed: () {
-          if (validateNumber(_phoneNumberController.text)) {
-            if (_passwordController.text == _repasswordController.text) {
-              newUser(_emailController.text, _passwordController.text);
-              newUserData();
-            } else
-              _showErrorSnack("Senhas diferentes");
-          } else {
+          if (validaCamposVazios()) {
+            _showErrorSnack("Preencha os campos");
+          } else if (validaCamposEspacos()) {
+            _showErrorSnack("Dados inválidos");
+          } else if (validateNumber(_phoneNumberController.text)) {
             _showErrorSnack("Formato de Telefone inválido");
+          } else if (validaEmail()) {
+            _showErrorSnack("Formato de E-mail inválido");
+          } else if (validateSenhasDiferentes()) {
+            _showErrorSnack("Senhas diferentes");
+          } else {
+            newUser(_emailController.text, _passwordController.text);
+            newUserData();
           }
         });
 
