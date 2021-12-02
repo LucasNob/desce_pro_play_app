@@ -238,6 +238,27 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
       }
     }
 
+    bool validaCamposEspacos() {
+      if (privado) {
+        if (_taxaController.text.trim() == "" ||
+            _nameController.text.trim() == "" ||
+            _enderecoController.text.trim() == "" ||
+            _cepController.text.trim() == "" ||
+            _locationImage == null)
+          return true;
+        else
+          return false;
+      } else {
+        if (_nameController.text.trim() == "" ||
+            _enderecoController.text.trim() == "" ||
+            _cepController.text.trim() == "" ||
+            _locationImage == null)
+          return true;
+        else
+          return false;
+      }
+    }
+
     bool validaDropDownItem() {
       if (dropdownValueSports == "Esportes Praticáveis: " ||
           dropdownValueQuadras == "Tipo de Quadras: ")
@@ -267,7 +288,9 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
               ))),
           onPressed: () {
             if (validaCamposVazios()) {
-              _showErrorSnack("Dados invalidos");
+              _showErrorSnack("Preencha os campos");
+            } else if (validaCamposEspacos()) {
+              _showErrorSnack("Dados inválidos");
             } else if (validaDropDownItem()) {
               _showErrorSnack("Selecione os itens");
             } else {
