@@ -19,6 +19,10 @@ class RegisterLocationScreen extends StatefulWidget {
 }
 
 class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
+  User? user = FirebaseAuth.instance.currentUser;
+  CollectionReference userdata =
+      FirebaseFirestore.instance.collection('locationdata');
+
   final _formKey = GlobalKey<FormState>();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _taxaController = TextEditingController();
@@ -53,7 +57,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
   File? _locationImage;
   final picker = ImagePicker();
 
-  Future uploadImageToFirebase() async {
+  Future uploadImageToFirebase(context) async {
     String fileName = basename(_locationImage!.path);
 
     FirebaseStorage storage = FirebaseStorage.instance;
@@ -61,7 +65,9 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
         storage.ref().child('location-images/$fileName');
     UploadTask uploadTask = firebaseStorageRef.putFile(_locationImage!);
     TaskSnapshot taskSnapshot = await uploadTask;
-    taskSnapshot.ref.getDownloadURL().then((value) => newLocationData(value));
+    taskSnapshot.ref
+        .getDownloadURL()
+        .then((value) => newLocationData(value, context));
   }
 
   Future pickImage() async {
@@ -77,30 +83,45 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     }
   }
 
-  void newLocationData(String imgURL) async {
-    User? user = FirebaseAuth.instance.currentUser;
+  void _showErrorSnack(String error, context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error),
+      ),
+    );
+  }
+
+  void newLocationData(String imgURL, context) async {
     String emailId = user!.email.toString();
-    print(_enderecoController.text);
-    List<Location> locations =
-        await locationFromAddress(_enderecoController.text);
-    print(_enderecoController.text);
-    CollectionReference userdata =
-        FirebaseFirestore.instance.collection('locationdata');
-    await userdata.doc(_nameController.text).set({
-      //criação de id especifico ao local?
-      'name': _nameController.text,
-      'fee': _taxaController.text,
-      'adress': _enderecoController.text,
-      'cep': _cepController.text,
-      'sports': dropdownValueSports,
-      'court_type': dropdownValueQuadras,
-      'about': _sobreController.text,
-      'created_by': emailId,
-      'image_url': imgURL,
-      'latitude': locations[0].latitude,
-      'longitude': locations[0].longitude,
-      'users': []
+
+    List<Location>? locations =
+        await locationFromAddress(_enderecoController.text).then((value) async {
+      await userdata.doc(_nameController.text).set({
+        'name': _nameController.text,
+        'fee': _taxaController.text,
+        'adress': _enderecoController.text,
+        'cep': _cepController.text,
+        'sports': dropdownValueSports,
+        'court_type': dropdownValueQuadras,
+        'about': _sobreController.text,
+        'created_by': emailId,
+        'image_url': imgURL,
+        'latitude': value[0].latitude,
+        'longitude': value[0].longitude,
+        'users': []
+      });
+      _showErrorSnack("Local criado com sucesso!", context);
+    }).catchError((e) {
+      _showErrorSnack("Endereço não encontrado.", context);
     });
+  }
+
+  Future<bool> localCreated() async {
+    if (await userdata.doc(_nameController.text).get() != null) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -119,14 +140,6 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
         width: mediaQuery.size.width / 5,
       ),
     );
-
-    void _showErrorSnack(String error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-        ),
-      );
-    }
 
     Widget textField(
         TextEditingController controller, String nome, double width) {
@@ -286,16 +299,20 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
                   RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ))),
-          onPressed: () {
+          onPressed: () async {
             if (validaCamposVazios()) {
-              _showErrorSnack("Preencha os campos");
+              _showErrorSnack("Preencha os campos", context);
             } else if (validaCamposEspacos()) {
-              _showErrorSnack("Dados inválidos");
+              _showErrorSnack("Dados inválidos", context);
             } else if (validaDropDownItem()) {
-              _showErrorSnack("Selecione os itens");
+              _showErrorSnack("Selecione os itens", context);
             } else {
-              uploadImageToFirebase();
-              Navigator.of(context).pop();
+              _showErrorSnack("Criando local...", context);
+              uploadImageToFirebase(context);
+
+              if (await localCreated()) {
+                Navigator.of(context).pop();
+              }
             }
           });
     }
