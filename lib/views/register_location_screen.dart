@@ -81,9 +81,11 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
     User? user = FirebaseAuth.instance.currentUser;
     String emailId = user!.email.toString();
     print(_enderecoController.text);
-    List<Location> locations = await locationFromAddress(_enderecoController.text);
+    List<Location> locations =
+        await locationFromAddress(_enderecoController.text);
     print(_enderecoController.text);
-    CollectionReference userdata = FirebaseFirestore.instance.collection('locationdata');
+    CollectionReference userdata =
+        FirebaseFirestore.instance.collection('locationdata');
     await userdata.doc(_nameController.text).set({
       //criação de id especifico ao local?
       'name': _nameController.text,
@@ -96,7 +98,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
       'created_by': emailId,
       'image_url': imgURL,
       'latitude': locations[0].latitude,
-      'longitude':locations[0].longitude,
+      'longitude': locations[0].longitude,
       'users': []
     });
   }
@@ -215,6 +217,56 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
           ));
     }
 
+    bool validaCamposVazios() {
+      if (privado) {
+        if (_taxaController.text.isEmpty ||
+            _nameController.text.isEmpty ||
+            _enderecoController.text.isEmpty ||
+            _cepController.text.isEmpty ||
+            _locationImage == null)
+          return true;
+        else
+          return false;
+      } else {
+        if (_nameController.text.isEmpty ||
+            _enderecoController.text.isEmpty ||
+            _cepController.text.isEmpty ||
+            _locationImage == null)
+          return true;
+        else
+          return false;
+      }
+    }
+
+    bool validaCamposEspacos() {
+      if (privado) {
+        if (_taxaController.text.trim() == "" ||
+            _nameController.text.trim() == "" ||
+            _enderecoController.text.trim() == "" ||
+            _cepController.text.trim() == "" ||
+            _locationImage == null)
+          return true;
+        else
+          return false;
+      } else {
+        if (_nameController.text.trim() == "" ||
+            _enderecoController.text.trim() == "" ||
+            _cepController.text.trim() == "" ||
+            _locationImage == null)
+          return true;
+        else
+          return false;
+      }
+    }
+
+    bool validaDropDownItem() {
+      if (dropdownValueSports == "Esportes Praticáveis: " ||
+          dropdownValueQuadras == "Tipo de Quadras: ")
+        return true;
+      else
+        return false;
+    }
+
     Widget completeButton() {
       return ElevatedButton(
           child: Padding(
@@ -235,11 +287,13 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
                 borderRadius: BorderRadius.circular(15),
               ))),
           onPressed: () {
-            if (_nameController.text.isEmpty ||
-                _enderecoController.text.isEmpty ||
-                _locationImage == null)
-              _showErrorSnack("Dados invalidos");
-            else {
+            if (validaCamposVazios()) {
+              _showErrorSnack("Preencha os campos");
+            } else if (validaCamposEspacos()) {
+              _showErrorSnack("Dados inválidos");
+            } else if (validaDropDownItem()) {
+              _showErrorSnack("Selecione os itens");
+            } else {
               uploadImageToFirebase();
               Navigator.of(context).pop();
             }
