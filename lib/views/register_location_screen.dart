@@ -307,7 +307,7 @@ class _RegisterLocationScreenState extends State<RegisterLocationScreen> {
             } else if (validaDropDownItem()) {
               _showErrorSnack("Selecione os itens", context);
             } else {
-              _showErrorSnack("Criando local...", context);
+              _showErrorSnack("Criando local... Aguarde", context);
               uploadImageToFirebase(context);
 
               if (await localCreated()) {
