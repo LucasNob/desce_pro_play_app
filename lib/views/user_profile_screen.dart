@@ -334,7 +334,8 @@ class _UserProfileViewState extends State<UserProfileScreen> {
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Padding(
-              padding: EdgeInsets.only(top: topAndBottomPadding),
+              padding: EdgeInsets.only(
+                  top: topAndBottomPadding, bottom: topAndBottomPadding),
               child: bodyContainer,
             ),
           ])),
