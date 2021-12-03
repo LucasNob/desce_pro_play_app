@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:intl/intl.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -16,7 +17,6 @@ class _RegisterViewState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
-  TextEditingController _birthDateController = TextEditingController();
   TextEditingController _phoneNumberController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -24,6 +24,7 @@ class _RegisterViewState extends State<RegisterScreen> {
 
   String _gender = "Masculino";
   int _radioId = 0;
+  DateTime? pickedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class _RegisterViewState extends State<RegisterScreen> {
     bool validaCamposVazios() {
       if (_firstNameController.text.isEmpty ||
           _lastNameController.text.isEmpty ||
-          _birthDateController.text.isEmpty ||
+          pickedDate.toString().isEmpty ||
           _phoneNumberController.text.isEmpty ||
           _emailController.text.isEmpty ||
           _passwordController.text.isEmpty ||
@@ -74,7 +75,7 @@ class _RegisterViewState extends State<RegisterScreen> {
     bool validaCamposEspacos() {
       if (_firstNameController.text.trim() == "" ||
           _lastNameController.text.trim() == "" ||
-          _birthDateController.text.trim() == "" ||
+          pickedDate.toString().trim() == "" ||
           _phoneNumberController.text.trim() == "" ||
           _emailController.text.trim() == "" ||
           _passwordController.text.trim() == "" ||
@@ -101,7 +102,7 @@ class _RegisterViewState extends State<RegisterScreen> {
       await userdata.doc(emailId).set({
         'first_name': _firstNameController.text,
         'last_name': _lastNameController.text,
-        'birth_date': _birthDateController.text,
+        'birth_date': DateFormat('dd-MM-yyyy').format(pickedDate!).toString(),
         'phone_number': _phoneNumberController.text,
         'user_gender': _gender,
         'image_url': '',
@@ -172,29 +173,52 @@ class _RegisterViewState extends State<RegisterScreen> {
           ),
         ));
 
-    final birthDateField = Material(
-        color: Colors.grey,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: Container(
-            width: mediaQuery.size.width / 1.4,
-            child: TextFormField(
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ],
-              controller: _birthDateController,
-              style: GoogleFonts.anton(
-                  fontSize: fieldFontSize, color: Colors.white),
-              cursorColor: Colors.white,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'Data de Nascimento',
-              ),
-            ),
+    final birthDateField = Container(
+      width: mediaQuery.size.width / 1.4,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Material(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                  width: mediaQuery.size.width / 2,
+                  height: mediaQuery.size.height / 16,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        pickedDate == null
+                            ? 'Data de Nascimento'
+                            : DateFormat('dd-MM-yyyy')
+                                .format(pickedDate!)
+                                .toString(),
+                        style: GoogleFonts.anton(
+                            fontSize: fieldFontSize, color: Colors.white),
+                      ),
+                    ],
+                  ))),
+          MaterialButton(
+            minWidth: mediaQuery.size.width / 8,
+            height: mediaQuery.size.height / 16,
+            color: Colors.orangeAccent,
+            child: Icon(Icons.calendar_today, color: Colors.white),
+            onPressed: () {
+              showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(1960),
+                      lastDate: DateTime.now())
+                  .then((date) {
+                setState(() {
+                  pickedDate = date!;
+                });
+              });
+            },
           ),
-        ));
+        ],
+      ),
+    );
 
     final genderField = Material(
         color: Colors.transparent,
@@ -397,7 +421,10 @@ class _RegisterViewState extends State<RegisterScreen> {
       children: <Widget>[
         buildTopPadding(topAndBottomPadding, firstNameField),
         buildTopPadding(topAndBottomPadding, lastNameField),
-        buildTopPadding(topAndBottomPadding, birthDateField),
+        Padding(
+            padding: EdgeInsets.only(
+                top: topAndBottomPadding, bottom: topAndBottomPadding),
+            child: birthDateField),
         buildTopPadding(topAndBottomPadding, genderField),
         buildTopPadding(topAndBottomPadding, phoneNumberField),
         buildTopPadding(topAndBottomPadding, emailField),
