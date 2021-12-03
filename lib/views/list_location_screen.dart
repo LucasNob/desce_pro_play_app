@@ -121,8 +121,6 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     }
 
     Widget toLocationButton(String name, double distance) {
-      String localName = name.substring(0, 6).trim();
-
       return Padding(
         padding: EdgeInsets.only(top: topAndBottomPadding),
         child: ElevatedButton(
@@ -139,9 +137,10 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          localName + " ...",
+                          name,
                           style: GoogleFonts.anton(
-                              fontSize: buttonFontSize, color: Colors.black),
+                              fontSize: mediaQuery.size.width / 24,
+                              color: Colors.black),
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
