@@ -23,9 +23,13 @@ class _UserProfileViewState extends State<UserProfileScreen> {
   User? currentUser = FirebaseAuth.instance.currentUser;
   CollectionReference userData =
       FirebaseFirestore.instance.collection('userdata');
+  DocumentReference? userDocRef;
+  DocumentSnapshot? userDoc;
 
   File? _userImage;
   final picker = ImagePicker();
+
+  var imgURL;
 
   Future uploadImageToFirebase() async {
     String fileName = basename(_userImage!.path);
@@ -60,24 +64,34 @@ class _UserProfileViewState extends State<UserProfileScreen> {
   }
 
   Material buildUserAvatar(var imageURL, width, height) {
-    return Material(
-        child: imageURL != null
-            ? ClipOval(
-                child: Image.network(
-                  imageURL,
-                  width: width,
-                  height: height,
-                  fit: BoxFit.cover,
-                ),
-              )
-            : ClipOval(
-                child: Image.asset(
-                  "lib/resources/user_default_profile_image.png",
-                  width: width,
-                  height: height,
-                  fit: BoxFit.fill,
-                ),
-              ));
+    if (imageURL == null || imageURL == "") {
+      return Material(
+          child: ClipOval(
+        child: Image.asset(
+          "lib/resources/user_default_profile_image.png",
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      ));
+    } else {
+      return Material(
+          child: ClipOval(
+        child: Image.network(
+          imageURL,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      ));
+    }
+  }
+
+  void getImageURL() async {
+    userDocRef = userData.doc(currentUser!.email);
+    userDoc = await userDocRef!.get();
+    imgURL = userDoc!.get('image_url').toString();
+    print(imgURL);
   }
 
   @override
@@ -88,35 +102,42 @@ class _UserProfileViewState extends State<UserProfileScreen> {
     final buttonFontSize = mediaQuery.size.width / 14;
     final topAndBottomPadding = mediaQuery.size.height / 30;
 
+    if (imgURL == null) {
+      setState(() {
+        getImageURL();
+      });
+    }
+
     final openGallery = IconButton(
       icon: Icon(Icons.photo_camera),
       onPressed: () {
         pickImage();
       },
     );
-    List sportsRow(List sports){
+
+    List sportsRow(List sports) {
       List s = [];
-      for(var i = 0;i<sports.length;i++)
-        switch(sports[i]) {
-          case('Futebol'):
+      for (var i = 0; i < sports.length; i++)
+        switch (sports[i]) {
+          case ('Futebol'):
             s.add(Icons.sports_soccer);
             break;
-          case('Skate'):
+          case ('Skate'):
             s.add(Icons.skateboarding);
             break;
-          case('Basquete'):
+          case ('Basquete'):
             s.add(Icons.sports_basketball);
             break;
-          case('Football'):
+          case ('Football'):
             s.add(Icons.sports_football);
             break;
-          case('Vôlei'):
+          case ('Vôlei'):
             s.add(Icons.sports_volleyball);
             break;
-          case('Tênis'):
+          case ('Tênis'):
             s.add(Icons.sports_tennis);
             break;
-          case('Outro'):
+          case ('Outro'):
             s.add(Icons.sports);
             break;
         }
@@ -136,84 +157,83 @@ class _UserProfileViewState extends State<UserProfileScreen> {
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data =
                 snapshot.data!.data() as Map<String, dynamic>;
-            return Padding(
-              padding: const EdgeInsets.all(1),
-              child: Container(
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildText("Nome", labelFontSize, Colors.grey),
-                            buildText('${data['first_name']}', valueFontSize,
-                                Colors.black),
-                            buildText("${data['last_name']}", valueFontSize,
-                                Colors.black)
-                          ],
-                        ),
-                        Padding(
-                            padding: EdgeInsets.only(
-                                top: mediaQuery.size.height / 35),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                buildText(
-                                    "Nascimento", labelFontSize, Colors.grey),
-                                buildText("${data['birth_date']}",
-                                    valueFontSize, Colors.black)
-                              ],
-                            )),
-                        Padding(
+
+            return Container(
+              width: mediaQuery.size.width / 1.2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          buildText("Nome", labelFontSize, Colors.grey),
+                          buildText('${data['first_name']}', valueFontSize,
+                              Colors.black),
+                          buildText("${data['last_name']}", valueFontSize,
+                              Colors.black)
+                        ],
+                      ),
+                      Padding(
                           padding:
                               EdgeInsets.only(top: mediaQuery.size.height / 35),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildText("Sexo", labelFontSize, Colors.grey),
-                              buildText("${data['user_gender']}", valueFontSize,
+                              buildText(
+                                  "Nascimento", labelFontSize, Colors.grey),
+                              buildText("${data['birth_date']}", valueFontSize,
                                   Colors.black)
                             ],
-                          ),
+                          )),
+                      Padding(
+                        padding:
+                            EdgeInsets.only(top: mediaQuery.size.height / 35),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildText("Sexo", labelFontSize, Colors.grey),
+                            buildText("${data['user_gender']}", valueFontSize,
+                                Colors.black)
+                          ],
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            top: mediaQuery.size.height / 35,
-                            bottom: mediaQuery.size.height / 35,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Esportes Favoritos",
-                                  style: GoogleFonts.anton(
-                                      fontSize: labelFontSize,
-                                      color: Colors.grey)),
-                              Row(children:<Widget>[
-                                    for(var icon in sportsRow(data['sports']))
-                                          Icon(icon)
-                                  ]
-                              ),
-                            ],
-                          ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: mediaQuery.size.height / 35,
+                          bottom: mediaQuery.size.height / 35,
                         ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Material(
-                          child: buildUserAvatar(
-                              data['image_url'],
-                              mediaQuery.size.width / 2.5,
-                              mediaQuery.size.height / 4.75),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Esportes Favoritos",
+                                style: GoogleFonts.anton(
+                                    fontSize: labelFontSize,
+                                    color: Colors.grey)),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: mediaQuery.size.height / 90),
+                              child: Row(children: <Widget>[
+                                for (var icon in sportsRow(data['sports']))
+                                  Icon(icon)
+                              ]),
+                            ),
+                          ],
                         ),
-                        openGallery,
-                      ],
-                    )
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      buildUserAvatar(imgURL, mediaQuery.size.width / 2.5,
+                          mediaQuery.size.height / 4.75),
+                      openGallery
+                    ],
+                  )
+                ],
               ),
             );
           }
@@ -227,7 +247,7 @@ class _UserProfileViewState extends State<UserProfileScreen> {
         Padding(
           padding: const EdgeInsets.only(),
           child: loadProfile,
-        )
+        ),
       ]),
     );
 
