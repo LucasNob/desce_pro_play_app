@@ -317,6 +317,28 @@ class _UserProfileViewState extends State<UserProfileScreen> {
           }),
     );
 
+    final editInformationsButton = ElevatedButton(
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(
+                mediaQuery.size.width / 20,
+                mediaQuery.size.height / 150,
+                mediaQuery.size.width / 20,
+                mediaQuery.size.height / 150),
+            child: Text(
+              "editar informações".toUpperCase(),
+              style: GoogleFonts.anton(
+                  fontSize: buttonFontSize, color: Colors.white),
+            )),
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.orangeAccent),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ))),
+        onPressed: () {
+          Navigator.of(context).pushNamed(AppRoutes.user_edit_informations);
+        });
+
     final newLocationButton = ElevatedButton(
         child: Padding(
             padding: EdgeInsets.fromLTRB(
@@ -343,6 +365,11 @@ class _UserProfileViewState extends State<UserProfileScreen> {
       child: Column(
         children: <Widget>[
           informationsContainer,
+          Padding(
+            padding: EdgeInsets.only(
+                top: topAndBottomPadding, bottom: topAndBottomPadding),
+            child: editInformationsButton,
+          ),
           Padding(
             padding: EdgeInsets.only(
                 top: topAndBottomPadding, bottom: topAndBottomPadding),
