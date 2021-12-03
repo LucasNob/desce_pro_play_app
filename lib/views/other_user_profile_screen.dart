@@ -27,24 +27,27 @@ class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
   }
 
   Material buildUserAvatar(var imageURL, width, height) {
-    return Material(
-        child: imageURL != null
-            ? ClipOval(
-                child: Image.network(
-                  imageURL,
-                  width: width,
-                  height: height,
-                  fit: BoxFit.cover,
-                ),
-              )
-            : ClipOval(
-                child: Image.asset(
-                  "lib/resources/user_default_profile_image.png",
-                  width: width,
-                  height: height,
-                  fit: BoxFit.fill,
-                ),
-              ));
+    if (imageURL == null || imageURL == "") {
+      return Material(
+          child: ClipOval(
+        child: Image.asset(
+          "lib/resources/user_default_profile_image.png",
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      ));
+    } else {
+      return Material(
+          child: ClipOval(
+        child: Image.network(
+          imageURL,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      ));
+    }
   }
 
   @override
@@ -68,78 +71,77 @@ class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data =
                 snapshot.data!.data() as Map<String, dynamic>;
-            return Padding(
-              padding: const EdgeInsets.all(1),
-              child: Container(
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildText("Nome", labelFontSize, Colors.grey),
-                            buildText('${data['first_name']}', valueFontSize,
-                                Colors.black),
-                            buildText("${data['last_name']}", valueFontSize,
-                                Colors.black)
-                          ],
-                        ),
-                        Padding(
-                            padding: EdgeInsets.only(
-                                top: mediaQuery.size.height / 35),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                buildText(
-                                    "Nascimento", labelFontSize, Colors.grey),
-                                buildText("${data['birth_date']}",
-                                    valueFontSize, Colors.black)
-                              ],
-                            )),
-                        Padding(
+            return Container(
+              width: mediaQuery.size.width / 1.2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          buildText("Nome", labelFontSize, Colors.grey),
+                          buildText('${data['first_name']}', valueFontSize,
+                              Colors.black),
+                          buildText("${data['last_name']}", valueFontSize,
+                              Colors.black)
+                        ],
+                      ),
+                      Padding(
                           padding:
                               EdgeInsets.only(top: mediaQuery.size.height / 35),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildText("Sexo", labelFontSize, Colors.grey),
-                              buildText("${data['user_gender']}", valueFontSize,
+                              buildText(
+                                  "Nascimento", labelFontSize, Colors.grey),
+                              buildText("${data['birth_date']}", valueFontSize,
                                   Colors.black)
                             ],
-                          ),
+                          )),
+                      Padding(
+                        padding:
+                            EdgeInsets.only(top: mediaQuery.size.height / 35),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildText("Sexo", labelFontSize, Colors.grey),
+                            buildText("${data['user_gender']}", valueFontSize,
+                                Colors.black)
+                          ],
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            top: mediaQuery.size.height / 35,
-                            bottom: mediaQuery.size.height / 35,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Esportes Favoritos",
-                                  style: GoogleFonts.anton(
-                                      fontSize: labelFontSize,
-                                      color: Colors.grey)),
-                            ],
-                          ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: mediaQuery.size.height / 35,
+                          bottom: mediaQuery.size.height / 35,
                         ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Material(
-                          child: buildUserAvatar(
-                              data['image_url'],
-                              mediaQuery.size.width / 2.5,
-                              mediaQuery.size.height / 4.75),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Esportes Favoritos",
+                                style: GoogleFonts.anton(
+                                    fontSize: labelFontSize,
+                                    color: Colors.grey)),
+                          ],
                         ),
-                      ],
-                    )
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Material(
+                        child: buildUserAvatar(
+                            data['image_url'],
+                            mediaQuery.size.width / 2.5,
+                            mediaQuery.size.height / 4.75),
+                      ),
+                    ],
+                  )
+                ],
               ),
             );
           }
@@ -150,11 +152,7 @@ class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
       width: mediaQuery.size.width / 1.2,
       height: mediaQuery.size.height / 2.3,
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Padding(
-          padding: EdgeInsets.only(right: mediaQuery.size.width / 14),
-          child: loadProfile,
-        ),
-
+        loadProfile,
       ]),
     );
 
