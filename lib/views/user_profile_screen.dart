@@ -289,8 +289,6 @@ class _UserProfileViewState extends State<UserProfileScreen> {
                 builder: (context) => LocationProfileScreen(locationName: name),
               ),
             );
-            //Navigator.of(context).pushNamed(AppRoutes.location_profile,arguments: {'locationName': name});
-            //userSignIn(_emailController.text, _passwordController.text);
           });
     }
 
@@ -301,19 +299,26 @@ class _UserProfileViewState extends State<UserProfileScreen> {
               FirebaseFirestore.instance.collection('locationdata').snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            List<Widget> locationlist  =[];
             if (!snapshot.hasData) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
-            return Column(
-              children: snapshot.data!.docs.map((documents) {
-                return Padding(
-                  padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
-                  child: toLocationButton(documents['name']),
+            else {
+              for (QueryDocumentSnapshot document in snapshot.data!.docs){
+                if(document['created_by'] == currentUser!.email)
+                  locationlist.add(
+                    Padding(
+                      padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
+                      child: toLocationButton(document['name']),
+                    )
                 );
-              }).toList(),
-            );
+              }
+              return Column(
+                children: locationlist,
+              );
+            }
           }),
     );
 

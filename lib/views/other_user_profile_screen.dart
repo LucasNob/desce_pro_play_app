@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'location_profile_screen.dart';
+
 class OtherUserProfileScreen extends StatefulWidget {
   const OtherUserProfileScreen({Key? key, required this.userEmail})
       : super(key: key);
@@ -156,65 +158,75 @@ class _OtherUserProfileViewState extends State<OtherUserProfileScreen> {
       ]),
     );
 
-    final toLocationButton = ElevatedButton(
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(
-                mediaQuery.size.width / 22,
-                mediaQuery.size.height / 155,
-                mediaQuery.size.width / 22,
-                mediaQuery.size.height / 155),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Local",
-                  style: GoogleFonts.roboto(
-                      fontSize: buttonFontSize,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold),
-                ),
-                Icon(Icons.chevron_right_outlined,
-                    size: mediaQuery.size.width / 10, color: Color(0xff565656))
-              ],
-            )),
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Color(0xffC4C4C4)),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ))),
-        onPressed: () {
-          //userSignIn(_emailController.text, _passwordController.text);
-        });
+    Widget toLocationButton(String name) {
+      String localName = name.substring(0, 5).trim();
+
+      return ElevatedButton(
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                  mediaQuery.size.width / 22,
+                  mediaQuery.size.height / 155,
+                  mediaQuery.size.width / 22,
+                  mediaQuery.size.height / 155),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    localName + " ...",
+                    style: GoogleFonts.roboto(
+                        fontSize: buttonFontSize,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Icon(Icons.chevron_right_outlined,
+                      size: mediaQuery.size.width / 10,
+                      color: Color(0xff565656))
+                ],
+              )),
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Color(0xffC4C4C4)),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ))),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LocationProfileScreen(locationName: name),
+              ),
+            );
+          });
+    }
 
     final locationsContainer = Container(
       width: mediaQuery.size.width / 1.2,
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text("Locais Recentes",
-            style:
-                GoogleFonts.anton(fontSize: labelFontSize, color: Colors.grey)),
-        toLocationButton,
-        Padding(
-          padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
-          child: toLocationButton,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
-          child: toLocationButton,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
-          child: toLocationButton,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
-          child: toLocationButton,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
-          child: toLocationButton,
-        ),
-      ]),
+      child: StreamBuilder(
+          stream:
+          FirebaseFirestore.instance.collection('locationdata').snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            List<Widget> locationlist  =[];
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            else {
+              for (QueryDocumentSnapshot document in snapshot.data!.docs){
+                if(document['created_by'] == widget.userEmail)
+                  locationlist.add(
+                      Padding(
+                        padding: EdgeInsets.only(top: mediaQuery.size.height / 50),
+                        child: toLocationButton(document['name']),
+                      )
+                  );
+              }
+              return Column(
+                children: locationlist,
+              );
+            }
+          }),
     );
 
     final bodyContainer = Container(
