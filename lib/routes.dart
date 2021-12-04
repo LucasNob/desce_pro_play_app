@@ -8,6 +8,7 @@ import 'package:desce_pro_play_app/views/location_profile_screen.dart';
 import 'package:desce_pro_play_app/views/register_location_screen.dart';
 import 'package:desce_pro_play_app/views/register_users_screen.dart';
 import 'package:desce_pro_play_app/views/register_sports_screen.dart';
+import 'package:desce_pro_play_app/views/user_edit_informations_screen.dart';
 import 'package:desce_pro_play_app/views/user_profile_screen.dart';
 import 'package:desce_pro_play_app/views/other_user_profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class AppRoutes {
   static const String list_location = '/list_location';
   static const String list_profiles = '/list_profiles';
   static const String location_profile = '/location_profile';
+  static const String user_edit_informations = '/user_edit_informations';
 
   static Map<String, WidgetBuilder> define() {
     return {
@@ -44,6 +46,7 @@ class AppRoutes {
       list_profiles: (context) => ListProfilesScreen(),
       location_profile: (context) => LocationProfileScreen(locationName: ''),
       other_user_profile: (context) => OtherUserProfileScreen(userEmail: ''),
+      user_edit_informations: (context) => UserEditInformationsScreen(),
     };
   }
 }
