@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:desce_pro_play_app/views/location_profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,56 +14,12 @@ class ListLocationScreen extends StatefulWidget {
 
 class _ListLocationScreenState extends State<ListLocationScreen> {
   double valueDistance = 5;
-  Map<String, double> locationList = {};
+  Position ?userPosition;
 
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    return await Geolocator.getCurrentPosition();
-  }
-
-  _getLocationDistance() async {
-    Position userPosition = await _determinePosition();
-    double distance;
-    locationList.clear();
-    print("User Latitude " +
-        userPosition.latitude.toString() +
-        ", Latitude " +
-        userPosition.latitude.toString());
-
-    await FirebaseFirestore.instance
-        .collection('locationdata')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) async {
-        distance = Geolocator.distanceBetween(doc['latitude'], doc['longitude'],
-            userPosition.latitude, userPosition.longitude);
-
-        print("${doc['name']} " + distance.toString());
-
-        if (distance <= valueDistance * 1000) {
-          locationList[doc['name']] = distance;
-        }
-      });
-    });
+  _getUserPosition() async {
+    await Geolocator.isLocationServiceEnabled();
+    await Geolocator.checkPermission();
+    userPosition = await Geolocator.getCurrentPosition();
   }
 
   Padding buildTopPadding(double topPadding, Widget field) {
@@ -82,7 +37,7 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
     final topAndBottomPadding = mediaQuery.size.height / 30;
     final _formKey = GlobalKey<FormState>();
 
-    _getLocationDistance();
+    _getUserPosition();
 
     Widget buildSideLabel(double value) => Container(
           child: Text(
@@ -174,18 +129,40 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
       );
     }
 
-    List<Widget> getLocationsList() {
-      List<Widget> list = [];
-      locationList.forEach((key, value) {
-        list.add(toLocationButton(key, value));
-      });
-      return list;
-    }
+    final getLocations = Container(
+      width: mediaQuery.size.width / 1.2,
+      child: StreamBuilder(
+          stream:
+          FirebaseFirestore.instance.collection('locationdata').snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            List<Widget> locationlist  =[];
 
-    Widget getLocations() => Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: getLocationsList(),
-        );
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            else {
+              for (QueryDocumentSnapshot document in snapshot.data!.docs){
+                double distance = Geolocator.distanceBetween(
+                    document['latitude'],
+                    document['longitude'],
+                    userPosition!.latitude,
+                    userPosition!.longitude);
+                if( distance <= valueDistance * 1000)
+                  locationlist.add(
+                      Container(
+                        child: toLocationButton(document['name'],distance),
+                      )
+                  );
+              }
+              return Column(
+                children: locationlist,
+              );
+            }
+          }),
+    );
 
     Widget locationsContainer() {
       return Container(
@@ -196,7 +173,7 @@ class _ListLocationScreenState extends State<ListLocationScreen> {
                 style: GoogleFonts.anton(
                     fontSize: buttonFontSize, color: Colors.black)),
             buildTopPadding(topAndBottomPadding, buildSliderSideLabel()),
-            getLocations()
+            getLocations
           ],
         ),
       );
