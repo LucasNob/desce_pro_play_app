@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,7 +13,8 @@ class ForgetPasswordEmailScreen extends StatefulWidget {
 
 class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _emailController = TextEditingController();
+  final auth = FirebaseAuth.instance;
+  String _email = "";
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,6 @@ class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
           child: Container(
             width: mediaQuery.size.width / 1.4,
             child: TextFormField(
-              controller: _emailController,
               style: GoogleFonts.anton(
                   fontSize: fieldFontSize, color: Colors.white),
               cursorColor: Colors.white,
@@ -47,6 +48,11 @@ class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
                 border: InputBorder.none,
                 hintText: 'E-mail',
               ),
+              onChanged: (value) {
+                setState(() {
+                  _email = value.trim();
+                });
+              },
             ),
           ),
         ));
@@ -60,16 +66,18 @@ class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
                 mediaQuery.size.height / 150),
             child: Text(
               "recuperar senha".toUpperCase(),
-              style: GoogleFonts.anton(fontSize: buttonFontSize, color: Colors.black),
+              style: GoogleFonts.anton(
+                  fontSize: buttonFontSize, color: Colors.black),
             )),
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Color(0xffFF8A00)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ))),
+              borderRadius: BorderRadius.circular(15),
+            ))),
         onPressed: () {
-          Navigator.of(context).pushNamed(AppRoutes.forget_password);
+          auth.sendPasswordResetEmail(email: _email);
+          Navigator.of(context).pushNamed(AppRoutes.home_login);
         });
 
     final registerFields = Column(
@@ -78,8 +86,7 @@ class _ForgetPasswordEmailViewState extends State<ForgetPasswordEmailScreen> {
         buildTopPadding(topAndBottomPadding, emailField),
         Padding(
           padding: EdgeInsets.only(
-              top: topAndBottomPadding,
-              bottom: topAndBottomPadding),
+              top: topAndBottomPadding, bottom: topAndBottomPadding),
           child: recoverPasswordButton,
         )
       ],
